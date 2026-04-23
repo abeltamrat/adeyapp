@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "lib": ["ES2022"],
+    "strict": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "baseUrl": ".",
+    "paths": {
+      "@adeyapp/config": ["packages/config/src"],
+      "@adeyapp/types": ["packages/types/src"],
+      "@adeyapp/auth": ["packages/auth/src"],
+      "@adeyapp/api-client": ["packages/api-client/src"],
+      "@adeyapp/ui": ["packages/ui/src"]
+    }
+  }
+}

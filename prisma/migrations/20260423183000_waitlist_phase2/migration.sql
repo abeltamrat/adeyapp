@@ -1,0 +1,22 @@
+CREATE TABLE `WaitlistEntry` (
+  `id` VARCHAR(191) NOT NULL,
+  `tenantId` VARCHAR(191) NOT NULL,
+  `branchId` VARCHAR(191) NOT NULL,
+  `customerId` VARCHAR(191) NOT NULL,
+  `serviceId` VARCHAR(191) NOT NULL,
+  `status` ENUM('waiting', 'contacted', 'promoted', 'closed') NOT NULL DEFAULT 'waiting',
+  `preferredStartAt` DATETIME(3) NULL,
+  `note` TEXT NULL,
+  `contactedAt` DATETIME(3) NULL,
+  `promotedAt` DATETIME(3) NULL,
+  `closedAt` DATETIME(3) NULL,
+  `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `updatedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  PRIMARY KEY (`id`),
+  INDEX `idx_waitlist_tenant_branch_status` (`tenantId`, `branchId`, `status`, `createdAt`),
+  INDEX `idx_waitlist_tenant_customer_created` (`tenantId`, `customerId`, `createdAt`),
+  CONSTRAINT `fk_waitlist_tenant` FOREIGN KEY (`tenantId`) REFERENCES `Tenant`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT `fk_waitlist_branch` FOREIGN KEY (`branchId`) REFERENCES `Branch`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT `fk_waitlist_customer` FOREIGN KEY (`customerId`) REFERENCES `CustomerProfile`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT `fk_waitlist_service` FOREIGN KEY (`serviceId`) REFERENCES `Service`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;

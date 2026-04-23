@@ -1,0 +1,957 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider          = "mysql"
+  url               = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+}
+
+enum UserStatus {
+  pending_verification
+  active
+  locked
+  disabled
+}
+
+enum TenantStatus {
+  draft
+  trial
+  active
+  grace_period
+  suspended
+  archived
+}
+
+enum BranchStatus {
+  active
+  inactive
+  closed
+}
+
+enum RoomStatus {
+  active
+  maintenance
+  inactive
+}
+
+enum RoleType {
+  owner
+  manager
+  receptionist
+  employee
+  customer
+  superadmin
+  superadmin_support
+  superadmin_finance
+}
+
+enum EmploymentStatus {
+  invited
+  active
+  suspended_paid
+  suspended_unpaid
+  terminated
+}
+
+enum ServiceStatus {
+  active
+  inactive
+}
+
+enum ProductStatus {
+  active
+  inactive
+}
+
+enum InventoryStatus {
+  active
+  low_stock
+  out_of_stock
+  inactive
+}
+
+enum AppointmentStatus {
+  draft
+  confirmed
+  checked_in
+  in_service
+  completed
+  canceled
+  no_show
+}
+
+enum AppointmentSource {
+  customer_app
+  reception
+  manager
+  owner
+}
+
+enum WaitlistStatus {
+  waiting
+  contacted
+  promoted
+  closed
+}
+
+enum LeaveRequestStatus {
+  pending
+  approved
+  rejected
+  canceled
+}
+
+enum CreditRequestStatus {
+  pending
+  approved
+  rejected
+  settled
+}
+
+enum PayrollBatchStatus {
+  draft
+  finalized
+  paid
+}
+
+enum SupplierStatus {
+  active
+  inactive
+}
+
+enum PurchaseOrderStatus {
+  draft
+  ordered
+  received
+  canceled
+}
+
+enum AttendanceStatus {
+  present
+  late
+  absent
+  partial
+  flagged
+}
+
+enum SubscriptionStatus {
+  trial
+  active
+  past_due
+  grace_period
+  suspended
+  canceled
+}
+
+enum InvoiceStatus {
+  draft
+  issued
+  paid
+  void
+  overdue
+}
+
+enum PaymentStatus {
+  pending
+  succeeded
+  failed
+  reversed
+}
+
+enum LedgerDirection {
+  debit
+  credit
+}
+
+enum NotificationStatus {
+  unread
+  read
+  archived
+}
+
+enum SupportTicketStatus {
+  open
+  in_progress
+  waiting_on_customer
+  resolved
+  closed
+}
+
+enum SupportTicketPriority {
+  low
+  normal
+  high
+  urgent
+}
+
+model User {
+  id             String            @id @default(cuid())
+  email          String            @unique(map: "uq_user_email")
+  phone          String?           @db.VarChar(32)
+  passwordHash   String            @db.VarChar(255)
+  status         UserStatus        @default(active)
+  isPlatformUser Boolean           @default(false)
+  lastLoginAt    DateTime?         @db.DateTime(3)
+  createdAt      DateTime          @default(now()) @db.DateTime(3)
+  updatedAt      DateTime          @updatedAt @db.DateTime(3)
+  ownedTenants   Tenant[]          @relation("TenantOwner")
+  employees      EmployeeProfile[]
+  customers      CustomerProfile[]
+  permissions    PermissionGrant[]
+  notifications  Notification[]
+  audits         AuditLog[]
+  requestedSupportTickets SupportTicket[] @relation("SupportTicketRequester")
+  assignedSupportTickets  SupportTicket[] @relation("SupportTicketAssignee")
+}
+
+model Tenant {
+  id                 String           @id @default(cuid())
+  name               String           @db.VarChar(191)
+  slug               String           @unique(map: "uq_tenant_slug") @db.VarChar(191)
+  status             TenantStatus     @default(draft)
+  ownerUserId        String
+  timezone           String           @db.VarChar(64)
+  currency           String           @db.VarChar(8)
+  country            String           @db.VarChar(64)
+  trialEndsAt        DateTime?        @db.DateTime(3)
+  activatedAt        DateTime?        @db.DateTime(3)
+  suspendedAt        DateTime?        @db.DateTime(3)
+  createdAt          DateTime         @default(now()) @db.DateTime(3)
+  updatedAt          DateTime         @updatedAt @db.DateTime(3)
+  owner              User             @relation("TenantOwner", fields: [ownerUserId], references: [id])
+  branches           Branch[]
+  roles              Role[]
+  permissions        PermissionGrant[]
+  employees          EmployeeProfile[]
+  customers          CustomerProfile[]
+  services           Service[]
+  products           Product[]
+  inventoryItems     InventoryItem[]
+  appointments       Appointment[]
+  waitlistEntries    WaitlistEntry[]
+  attendanceRecords  AttendanceRecord[]
+  shiftTemplates     ShiftTemplate[]
+  shiftAssignments   ShiftAssignment[]
+  workspacePolicies  WorkspacePolicy[]
+  branchPolicies     BranchPolicy[]
+  subscriptions      Subscription[]
+  invoices           Invoice[]
+  payments           Payment[]
+  ledgerEntries      LedgerEntry[]
+  notifications      Notification[]
+  auditLogs          AuditLog[]
+  supportTickets     SupportTicket[]
+  leaveTypes         LeaveType[]
+  leaveBalances      LeaveBalance[]
+  leaveRequests      LeaveRequest[]
+  creditRequests     CreditRequest[]
+  payrollBatches     PayrollBatch[]
+  payrollBatchItems  PayrollBatchItem[]
+  suppliers          Supplier[]
+  purchaseOrders     PurchaseOrder[]
+  purchaseOrderItems PurchaseOrderItem[]
+}
+
+model Branch {
+  id                String             @id @default(cuid())
+  tenantId          String
+  name              String             @db.VarChar(191)
+  code              String             @db.VarChar(64)
+  status            BranchStatus       @default(active)
+  addressLine1      String?            @db.VarChar(191)
+  addressLine2      String?            @db.VarChar(191)
+  city              String?            @db.VarChar(128)
+  country           String?            @db.VarChar(64)
+  timezone          String             @db.VarChar(64)
+  phone             String?            @db.VarChar(32)
+  email             String?            @db.VarChar(191)
+  isDefault         Boolean            @default(false)
+  approvedNetworks  Json?
+  createdAt         DateTime           @default(now()) @db.DateTime(3)
+  updatedAt         DateTime           @updatedAt @db.DateTime(3)
+  tenant            Tenant             @relation(fields: [tenantId], references: [id])
+  rooms             Room[]
+  services          Service[]
+  products          Product[]
+  inventoryItems    InventoryItem[]
+  employees         EmployeeProfile[]
+  customers         CustomerProfile[]
+  appointments      Appointment[]
+  waitlistEntries   WaitlistEntry[]
+  attendanceRecords AttendanceRecord[]
+  shiftTemplates    ShiftTemplate[]
+  shiftAssignments  ShiftAssignment[]
+  branchPolicies    BranchPolicy[]
+  notifications     Notification[]
+  auditLogs         AuditLog[]
+  supportTickets    SupportTicket[]
+  leaveTypes        LeaveType[]
+  leaveRequests     LeaveRequest[]
+  creditRequests    CreditRequest[]
+  payrollBatches    PayrollBatch[]
+  suppliers         Supplier[]
+  purchaseOrders    PurchaseOrder[]
+
+  @@unique([tenantId, code], map: "uq_branch_tenant_code")
+  @@index([tenantId, status], map: "idx_branch_tenant_status")
+}
+
+model Room {
+  id                   String      @id @default(cuid())
+  tenantId             String
+  branchId             String
+  name                 String      @db.VarChar(191)
+  code                 String      @db.VarChar(64)
+  roomType             String?     @db.VarChar(64)
+  capacity             Int         @default(1)
+  status               RoomStatus  @default(active)
+  cleanupBufferMinutes Int         @default(0)
+  createdAt            DateTime    @default(now()) @db.DateTime(3)
+  updatedAt            DateTime    @updatedAt @db.DateTime(3)
+  branch               Branch      @relation(fields: [branchId], references: [id])
+  appointments         Appointment[]
+
+  @@unique([branchId, code], map: "uq_room_branch_code")
+  @@index([tenantId, branchId, status], map: "idx_room_tenant_branch_status")
+}
+
+model Role {
+  id           String      @id @default(cuid())
+  tenantId     String
+  name         String      @db.VarChar(64)
+  roleType     RoleType
+  isSystemRole Boolean     @default(true)
+  createdAt    DateTime    @default(now()) @db.DateTime(3)
+  updatedAt    DateTime    @updatedAt @db.DateTime(3)
+  tenant       Tenant      @relation(fields: [tenantId], references: [id])
+  permissions  PermissionGrant[]
+
+  @@index([tenantId, roleType], map: "idx_role_tenant_type")
+}
+
+model PermissionGrant {
+  id            String   @id @default(cuid())
+  tenantId      String
+  userId        String
+  roleId        String?
+  branchId      String?
+  permissionKey String   @db.VarChar(128)
+  effect        String   @db.VarChar(16)
+  createdAt     DateTime @default(now()) @db.DateTime(3)
+  updatedAt     DateTime @updatedAt @db.DateTime(3)
+  tenant        Tenant   @relation(fields: [tenantId], references: [id])
+  user          User     @relation(fields: [userId], references: [id])
+  role          Role?    @relation(fields: [roleId], references: [id])
+
+  @@index([tenantId, userId], map: "idx_permission_tenant_user")
+}
+
+model EmployeeProfile {
+  id                String           @id @default(cuid())
+  tenantId          String
+  userId            String
+  primaryBranchId   String
+  employeeCode      String           @db.VarChar(64)
+  employmentStatus  EmploymentStatus @default(invited)
+  hireDate          DateTime?        @db.Date
+  terminationDate   DateTime?        @db.Date
+  creditEligible    Boolean          @default(false)
+  canEarnCommission Boolean          @default(true)
+  createdAt         DateTime         @default(now()) @db.DateTime(3)
+  updatedAt         DateTime         @updatedAt @db.DateTime(3)
+  tenant            Tenant           @relation(fields: [tenantId], references: [id])
+  user              User             @relation(fields: [userId], references: [id])
+  primaryBranch     Branch           @relation(fields: [primaryBranchId], references: [id])
+  appointments      Appointment[]
+  attendanceRecords AttendanceRecord[]
+  shiftAssignments  ShiftAssignment[]
+  leaveBalances     LeaveBalance[]
+  leaveRequests     LeaveRequest[]
+  creditRequests    CreditRequest[]
+  payrollBatchItems PayrollBatchItem[]
+
+  @@unique([tenantId, employeeCode], map: "uq_employee_tenant_code")
+  @@index([tenantId, userId], map: "idx_employee_tenant_user")
+}
+
+model CustomerProfile {
+  id               String        @id @default(cuid())
+  tenantId         String
+  userId           String?
+  primaryBranchId  String?
+  fullName         String        @db.VarChar(191)
+  phone            String?       @db.VarChar(32)
+  email            String?       @db.VarChar(191)
+  dateOfBirth      DateTime?     @db.Date
+  preferencesJson  Json?
+  notes            String?       @db.Text
+  marketingConsent Boolean       @default(false)
+  createdAt        DateTime      @default(now()) @db.DateTime(3)
+  updatedAt        DateTime      @updatedAt @db.DateTime(3)
+  tenant           Tenant        @relation(fields: [tenantId], references: [id])
+  user             User?         @relation(fields: [userId], references: [id])
+  primaryBranch    Branch?       @relation(fields: [primaryBranchId], references: [id])
+  appointments     Appointment[]
+  waitlistEntries  WaitlistEntry[]
+
+  @@index([tenantId, phone], map: "idx_customer_tenant_phone")
+}
+
+model Service {
+  id                   String         @id @default(cuid())
+  tenantId             String
+  branchId             String
+  name                 String         @db.VarChar(191)
+  code                 String         @db.VarChar(64)
+  description          String?        @db.Text
+  durationMinutes      Int
+  price                Decimal        @db.Decimal(18, 2)
+  status               ServiceStatus  @default(active)
+  requiresRoom         Boolean        @default(true)
+  requiresEmployeeSkill Boolean       @default(false)
+  createdAt            DateTime       @default(now()) @db.DateTime(3)
+  updatedAt            DateTime       @updatedAt @db.DateTime(3)
+  tenant               Tenant         @relation(fields: [tenantId], references: [id])
+  branch               Branch         @relation(fields: [branchId], references: [id])
+  appointmentLines     AppointmentLine[]
+  waitlistEntries      WaitlistEntry[]
+
+  @@unique([tenantId, branchId, code], map: "uq_service_tenant_branch_code")
+  @@index([tenantId, branchId, status], map: "idx_service_tenant_branch_status")
+}
+
+model Product {
+  id            String        @id @default(cuid())
+  tenantId      String
+  branchId      String
+  name          String        @db.VarChar(191)
+  sku           String        @db.VarChar(64)
+  description   String?       @db.Text
+  unitPrice     Decimal       @db.Decimal(18, 2)
+  costPrice     Decimal?      @db.Decimal(18, 2)
+  status        ProductStatus @default(active)
+  isRetail      Boolean       @default(true)
+  createdAt     DateTime      @default(now()) @db.DateTime(3)
+  updatedAt     DateTime      @updatedAt @db.DateTime(3)
+  tenant        Tenant        @relation(fields: [tenantId], references: [id])
+  branch        Branch        @relation(fields: [branchId], references: [id])
+  inventoryItem InventoryItem?
+  purchaseOrderItems PurchaseOrderItem[]
+
+  @@unique([tenantId, branchId, sku], map: "uq_product_tenant_branch_sku")
+  @@index([tenantId, branchId, status], map: "idx_product_tenant_branch_status")
+}
+
+model InventoryItem {
+  id             String          @id @default(cuid())
+  tenantId       String
+  branchId       String
+  productId      String          @unique(map: "uq_inventory_product")
+  quantityOnHand Decimal         @db.Decimal(18, 2)
+  reorderLevel   Decimal?        @db.Decimal(18, 2)
+  status         InventoryStatus @default(active)
+  lastCountedAt  DateTime?       @db.DateTime(3)
+  createdAt      DateTime        @default(now()) @db.DateTime(3)
+  updatedAt      DateTime        @updatedAt @db.DateTime(3)
+  tenant         Tenant          @relation(fields: [tenantId], references: [id])
+  branch         Branch          @relation(fields: [branchId], references: [id])
+  product        Product         @relation(fields: [productId], references: [id])
+
+  @@index([tenantId, branchId, status], map: "idx_inventory_tenant_branch_status")
+}
+
+model Appointment {
+  id          String             @id @default(cuid())
+  tenantId    String
+  branchId    String
+  customerId  String
+  roomId      String?
+  employeeId  String?
+  status      AppointmentStatus  @default(draft)
+  source      AppointmentSource
+  notes       String?            @db.Text
+  startAt     DateTime           @db.DateTime(3)
+  endAt       DateTime           @db.DateTime(3)
+  checkInAt   DateTime?          @db.DateTime(3)
+  checkOutAt  DateTime?          @db.DateTime(3)
+  createdAt   DateTime           @default(now()) @db.DateTime(3)
+  updatedAt   DateTime           @updatedAt @db.DateTime(3)
+  tenant      Tenant             @relation(fields: [tenantId], references: [id])
+  branch      Branch             @relation(fields: [branchId], references: [id])
+  customer    CustomerProfile    @relation(fields: [customerId], references: [id])
+  room        Room?              @relation(fields: [roomId], references: [id])
+  employee    EmployeeProfile?   @relation(fields: [employeeId], references: [id])
+  lines       AppointmentLine[]
+
+  @@index([tenantId, branchId, startAt], map: "idx_appointment_tenant_branch_start")
+  @@index([tenantId, employeeId, startAt], map: "idx_appointment_tenant_employee_start")
+  @@index([tenantId, roomId, startAt], map: "idx_appointment_tenant_room_start")
+  @@index([tenantId, customerId, startAt], map: "idx_appointment_tenant_customer_start")
+}
+
+model AppointmentLine {
+  id              String            @id @default(cuid())
+  tenantId        String
+  appointmentId   String
+  serviceId       String
+  employeeId      String?
+  durationMinutes Int
+  unitPrice       Decimal           @db.Decimal(18, 2)
+  status          AppointmentStatus @default(draft)
+  createdAt       DateTime          @default(now()) @db.DateTime(3)
+  updatedAt       DateTime          @updatedAt @db.DateTime(3)
+  appointment     Appointment       @relation(fields: [appointmentId], references: [id])
+  service         Service           @relation(fields: [serviceId], references: [id])
+}
+
+model WaitlistEntry {
+  id               String         @id @default(cuid())
+  tenantId         String
+  branchId         String
+  customerId       String
+  serviceId        String
+  status           WaitlistStatus @default(waiting)
+  preferredStartAt DateTime?      @db.DateTime(3)
+  note             String?        @db.Text
+  contactedAt      DateTime?      @db.DateTime(3)
+  promotedAt       DateTime?      @db.DateTime(3)
+  closedAt         DateTime?      @db.DateTime(3)
+  createdAt        DateTime       @default(now()) @db.DateTime(3)
+  updatedAt        DateTime       @updatedAt @db.DateTime(3)
+  tenant           Tenant         @relation(fields: [tenantId], references: [id])
+  branch           Branch         @relation(fields: [branchId], references: [id])
+  customer         CustomerProfile @relation(fields: [customerId], references: [id])
+  service          Service        @relation(fields: [serviceId], references: [id])
+
+  @@index([tenantId, branchId, status, createdAt], map: "idx_waitlist_tenant_branch_status")
+  @@index([tenantId, customerId, createdAt], map: "idx_waitlist_tenant_customer_created")
+}
+
+model AttendanceRecord {
+  id                String           @id @default(cuid())
+  tenantId          String
+  branchId          String
+  employeeId        String
+  shiftAssignmentId String?
+  attendanceStatus  AttendanceStatus @default(present)
+  networkIdentifier String?          @db.VarChar(191)
+  gpsLatitude       Decimal?         @db.Decimal(10, 7)
+  gpsLongitude      Decimal?         @db.Decimal(10, 7)
+  latenessMinutes   Int              @default(0)
+  exceptionFlag     Boolean          @default(false)
+  checkInAt         DateTime?        @db.DateTime(3)
+  checkOutAt        DateTime?        @db.DateTime(3)
+  createdAt         DateTime         @default(now()) @db.DateTime(3)
+  updatedAt         DateTime         @updatedAt @db.DateTime(3)
+  tenant            Tenant           @relation(fields: [tenantId], references: [id])
+  branch            Branch           @relation(fields: [branchId], references: [id])
+  employee          EmployeeProfile  @relation(fields: [employeeId], references: [id])
+  shiftAssignment   ShiftAssignment? @relation(fields: [shiftAssignmentId], references: [id])
+
+  @@index([tenantId, branchId, checkInAt], map: "idx_attendance_tenant_branch_checkin")
+  @@index([tenantId, employeeId, checkInAt], map: "idx_attendance_tenant_employee_checkin")
+}
+
+model ShiftTemplate {
+  id                 String            @id @default(cuid())
+  tenantId           String
+  branchId           String
+  name               String            @db.VarChar(191)
+  code               String            @db.VarChar(64)
+  startTime          String            @db.VarChar(8)
+  endTime            String            @db.VarChar(8)
+  gracePeriodMinutes Int               @default(0)
+  createdAt          DateTime          @default(now()) @db.DateTime(3)
+  updatedAt          DateTime          @updatedAt @db.DateTime(3)
+  tenant             Tenant            @relation(fields: [tenantId], references: [id])
+  branch             Branch            @relation(fields: [branchId], references: [id])
+  assignments        ShiftAssignment[]
+
+  @@unique([tenantId, branchId, code], map: "uq_shift_template_tenant_branch_code")
+  @@index([tenantId, branchId], map: "idx_shift_template_tenant_branch")
+}
+
+model ShiftAssignment {
+  id              String             @id @default(cuid())
+  tenantId        String
+  branchId        String
+  employeeId      String
+  shiftTemplateId String
+  shiftDate       DateTime           @db.Date
+  startAt         DateTime           @db.DateTime(3)
+  endAt           DateTime           @db.DateTime(3)
+  createdAt       DateTime           @default(now()) @db.DateTime(3)
+  updatedAt       DateTime           @updatedAt @db.DateTime(3)
+  tenant          Tenant             @relation(fields: [tenantId], references: [id])
+  branch          Branch             @relation(fields: [branchId], references: [id])
+  employee        EmployeeProfile    @relation(fields: [employeeId], references: [id])
+  shiftTemplate   ShiftTemplate      @relation(fields: [shiftTemplateId], references: [id])
+  attendance      AttendanceRecord[]
+
+  @@index([tenantId, branchId, shiftDate], map: "idx_shift_assignment_tenant_branch_date")
+  @@index([tenantId, employeeId, shiftDate], map: "idx_shift_assignment_tenant_employee_date")
+  @@unique([employeeId, shiftDate, shiftTemplateId], map: "uq_shift_assignment_employee_date_template")
+}
+
+model WorkspacePolicy {
+  id              String   @id @default(cuid())
+  tenantId        String
+  policyKey       String   @db.VarChar(128)
+  policyValueJson Json
+  version         Int      @default(1)
+  isActive        Boolean  @default(true)
+  effectiveFrom   DateTime @default(now()) @db.DateTime(3)
+  createdAt       DateTime @default(now()) @db.DateTime(3)
+  updatedAt       DateTime @updatedAt @db.DateTime(3)
+  tenant          Tenant   @relation(fields: [tenantId], references: [id])
+
+  @@index([tenantId, policyKey, isActive], map: "idx_workspace_policy_lookup")
+}
+
+model BranchPolicy {
+  id              String   @id @default(cuid())
+  tenantId        String
+  branchId        String
+  policyKey       String   @db.VarChar(128)
+  policyValueJson Json
+  version         Int      @default(1)
+  isActive        Boolean  @default(true)
+  effectiveFrom   DateTime @default(now()) @db.DateTime(3)
+  createdAt       DateTime @default(now()) @db.DateTime(3)
+  updatedAt       DateTime @updatedAt @db.DateTime(3)
+  tenant          Tenant   @relation(fields: [tenantId], references: [id])
+  branch          Branch   @relation(fields: [branchId], references: [id])
+
+  @@index([tenantId, branchId, policyKey, isActive], map: "idx_branch_policy_lookup")
+}
+
+model Subscription {
+  id          String             @id @default(cuid())
+  tenantId    String
+  planCode    String             @db.VarChar(64)
+  status      SubscriptionStatus @default(trial)
+  startedAt   DateTime           @default(now()) @db.DateTime(3)
+  renewsAt    DateTime?          @db.DateTime(3)
+  graceEndsAt DateTime?          @db.DateTime(3)
+  canceledAt  DateTime?          @db.DateTime(3)
+  createdAt   DateTime           @default(now()) @db.DateTime(3)
+  updatedAt   DateTime           @updatedAt @db.DateTime(3)
+  tenant      Tenant             @relation(fields: [tenantId], references: [id])
+  invoices    Invoice[]
+
+  @@index([tenantId, status], map: "idx_subscription_tenant_status")
+}
+
+model Invoice {
+  id             String        @id @default(cuid())
+  tenantId       String
+  subscriptionId String
+  invoiceNumber  String        @unique(map: "uq_invoice_number") @db.VarChar(64)
+  status         InvoiceStatus @default(draft)
+  currency       String        @db.VarChar(8)
+  subtotal       Decimal       @db.Decimal(18, 2)
+  taxAmount      Decimal       @default(0) @db.Decimal(18, 2)
+  totalAmount    Decimal       @db.Decimal(18, 2)
+  dueAt          DateTime?     @db.DateTime(3)
+  issuedAt       DateTime?     @db.DateTime(3)
+  paidAt         DateTime?     @db.DateTime(3)
+  createdAt      DateTime      @default(now()) @db.DateTime(3)
+  updatedAt      DateTime      @updatedAt @db.DateTime(3)
+  tenant         Tenant        @relation(fields: [tenantId], references: [id])
+  subscription   Subscription  @relation(fields: [subscriptionId], references: [id])
+  payments       Payment[]
+
+  @@index([tenantId, subscriptionId, status], map: "idx_invoice_tenant_subscription_status")
+}
+
+model Payment {
+  id                String        @id @default(cuid())
+  tenantId          String
+  invoiceId         String
+  paymentMethod     String        @db.VarChar(64)
+  providerReference String?       @db.VarChar(191)
+  status            PaymentStatus @default(pending)
+  amount            Decimal       @db.Decimal(18, 2)
+  currency          String        @db.VarChar(8)
+  receivedAt        DateTime?     @db.DateTime(3)
+  createdAt         DateTime      @default(now()) @db.DateTime(3)
+  updatedAt         DateTime      @updatedAt @db.DateTime(3)
+  tenant            Tenant        @relation(fields: [tenantId], references: [id])
+  invoice           Invoice       @relation(fields: [invoiceId], references: [id])
+
+  @@index([tenantId, invoiceId, status], map: "idx_payment_tenant_invoice_status")
+}
+
+model LedgerEntry {
+  id            String          @id @default(cuid())
+  tenantId      String
+  entryGroupId  String          @db.VarChar(64)
+  accountCode   String          @db.VarChar(64)
+  direction     LedgerDirection
+  amount        Decimal         @db.Decimal(18, 2)
+  currency      String          @db.VarChar(8)
+  referenceType String?         @db.VarChar(64)
+  referenceId   String?         @db.VarChar(64)
+  description   String?         @db.VarChar(255)
+  createdAt     DateTime        @default(now()) @db.DateTime(3)
+  tenant        Tenant          @relation(fields: [tenantId], references: [id])
+
+  @@index([tenantId, entryGroupId], map: "idx_ledger_tenant_group")
+  @@index([tenantId, referenceType, referenceId], map: "idx_ledger_reference")
+}
+
+model Notification {
+  id            String             @id @default(cuid())
+  tenantId      String
+  branchId      String?
+  userId        String
+  type          String             @db.VarChar(64)
+  title         String             @db.VarChar(191)
+  body          String             @db.Text
+  status        NotificationStatus @default(unread)
+  referenceType String?            @db.VarChar(64)
+  referenceId   String?            @db.VarChar(64)
+  createdAt     DateTime           @default(now()) @db.DateTime(3)
+  tenant        Tenant             @relation(fields: [tenantId], references: [id])
+  branch        Branch?            @relation(fields: [branchId], references: [id])
+  user          User               @relation(fields: [userId], references: [id])
+
+  @@index([tenantId, userId, status], map: "idx_notification_tenant_user_status")
+}
+
+model AuditLog {
+  id          String   @id @default(cuid())
+  tenantId    String
+  branchId    String?
+  actorUserId String
+  actionKey   String   @db.VarChar(128)
+  entityType  String   @db.VarChar(64)
+  entityId    String   @db.VarChar(64)
+  metadataJson Json?
+  ipAddress   String?  @db.VarChar(64)
+  deviceInfo  String?  @db.VarChar(191)
+  createdAt   DateTime @default(now()) @db.DateTime(3)
+  tenant      Tenant   @relation(fields: [tenantId], references: [id])
+  branch      Branch?  @relation(fields: [branchId], references: [id])
+  actor       User     @relation(fields: [actorUserId], references: [id])
+
+  @@index([tenantId, createdAt], map: "idx_audit_tenant_created")
+  @@index([tenantId, entityType, entityId], map: "idx_audit_entity_lookup")
+}
+
+model SupportTicket {
+  id               String               @id @default(cuid())
+  tenantId         String
+  branchId         String?
+  requesterUserId  String
+  assignedToUserId String?
+  subject          String               @db.VarChar(191)
+  body             String               @db.Text
+  category         String               @db.VarChar(64)
+  channel          String               @db.VarChar(64)
+  priority         SupportTicketPriority @default(normal)
+  status           SupportTicketStatus   @default(open)
+  internalNote     String?              @db.Text
+  resolutionNote   String?              @db.Text
+  resolvedAt       DateTime?            @db.DateTime(3)
+  createdAt        DateTime             @default(now()) @db.DateTime(3)
+  updatedAt        DateTime             @updatedAt @db.DateTime(3)
+  tenant           Tenant               @relation(fields: [tenantId], references: [id])
+  branch           Branch?              @relation(fields: [branchId], references: [id])
+  requester        User                 @relation("SupportTicketRequester", fields: [requesterUserId], references: [id])
+  assignee         User?                @relation("SupportTicketAssignee", fields: [assignedToUserId], references: [id])
+
+  @@index([tenantId, status, createdAt], map: "idx_support_ticket_tenant_status")
+  @@index([assignedToUserId, status, createdAt], map: "idx_support_ticket_assignee_status")
+  @@index([tenantId, priority, createdAt], map: "idx_support_ticket_tenant_priority")
+}
+
+model LeaveType {
+  id                 String   @id @default(cuid())
+  tenantId           String
+  branchId           String?
+  name               String   @db.VarChar(191)
+  code               String   @db.VarChar(64)
+  isPaid             Boolean  @default(true)
+  defaultBalanceDays Decimal  @default(0) @db.Decimal(10, 2)
+  requiresDocument   Boolean  @default(false)
+  createdAt          DateTime @default(now()) @db.DateTime(3)
+  updatedAt          DateTime @updatedAt @db.DateTime(3)
+  tenant             Tenant   @relation(fields: [tenantId], references: [id])
+  branch             Branch?  @relation(fields: [branchId], references: [id])
+  balances           LeaveBalance[]
+  requests           LeaveRequest[]
+
+  @@unique([tenantId, code], map: "uq_leave_type_tenant_code")
+  @@index([tenantId, branchId], map: "idx_leave_type_tenant_branch")
+}
+
+model LeaveBalance {
+  id             String   @id @default(cuid())
+  tenantId       String
+  employeeId     String
+  leaveTypeId    String
+  balanceDays    Decimal  @default(0) @db.Decimal(10, 2)
+  usedDays       Decimal  @default(0) @db.Decimal(10, 2)
+  carriedOverDays Decimal @default(0) @db.Decimal(10, 2)
+  createdAt      DateTime @default(now()) @db.DateTime(3)
+  updatedAt      DateTime @updatedAt @db.DateTime(3)
+  tenant         Tenant   @relation(fields: [tenantId], references: [id])
+  employee       EmployeeProfile @relation(fields: [employeeId], references: [id])
+  leaveType      LeaveType @relation(fields: [leaveTypeId], references: [id])
+
+  @@unique([employeeId, leaveTypeId], map: "uq_leave_balance_employee_type")
+  @@index([tenantId, employeeId], map: "idx_leave_balance_tenant_employee")
+}
+
+model LeaveRequest {
+  id             String             @id @default(cuid())
+  tenantId       String
+  branchId       String
+  employeeId     String
+  leaveTypeId    String
+  startDate      DateTime           @db.Date
+  endDate        DateTime           @db.Date
+  dayCount       Decimal            @db.Decimal(10, 2)
+  status         LeaveRequestStatus @default(pending)
+  reason         String?            @db.Text
+  managerNote    String?            @db.Text
+  approvedByUserId String?
+  approvedAt     DateTime?          @db.DateTime(3)
+  rejectedAt     DateTime?          @db.DateTime(3)
+  createdAt      DateTime           @default(now()) @db.DateTime(3)
+  updatedAt      DateTime           @updatedAt @db.DateTime(3)
+  tenant         Tenant             @relation(fields: [tenantId], references: [id])
+  branch         Branch             @relation(fields: [branchId], references: [id])
+  employee       EmployeeProfile    @relation(fields: [employeeId], references: [id])
+  leaveType      LeaveType          @relation(fields: [leaveTypeId], references: [id])
+
+  @@index([tenantId, branchId, status, startDate], map: "idx_leave_request_tenant_branch_status")
+  @@index([tenantId, employeeId, status, startDate], map: "idx_leave_request_tenant_employee_status")
+}
+
+model CreditRequest {
+  id              String              @id @default(cuid())
+  tenantId        String
+  branchId        String
+  employeeId      String
+  amount          Decimal             @db.Decimal(18, 2)
+  approvedAmount  Decimal?            @db.Decimal(18, 2)
+  repaidAmount    Decimal             @default(0) @db.Decimal(18, 2)
+  status          CreditRequestStatus @default(pending)
+  reason          String?             @db.Text
+  ownerNote       String?             @db.Text
+  requestedAt     DateTime            @default(now()) @db.DateTime(3)
+  approvedAt      DateTime?           @db.DateTime(3)
+  settledAt       DateTime?           @db.DateTime(3)
+  createdAt       DateTime            @default(now()) @db.DateTime(3)
+  updatedAt       DateTime            @updatedAt @db.DateTime(3)
+  tenant          Tenant              @relation(fields: [tenantId], references: [id])
+  branch          Branch              @relation(fields: [branchId], references: [id])
+  employee        EmployeeProfile     @relation(fields: [employeeId], references: [id])
+
+  @@index([tenantId, branchId, status, requestedAt], map: "idx_credit_request_tenant_branch_status")
+  @@index([tenantId, employeeId, status, requestedAt], map: "idx_credit_request_tenant_employee_status")
+}
+
+model PayrollBatch {
+  id                   String             @id @default(cuid())
+  tenantId             String
+  branchId             String?
+  actorUserId          String
+  fromDate             DateTime           @db.Date
+  toDate               DateTime           @db.Date
+  hourlyRate           Decimal            @default(0) @db.Decimal(18, 2)
+  latePenaltyPerMinute Decimal            @default(0) @db.Decimal(18, 2)
+  includeCreditDeductions Boolean         @default(true)
+  status               PayrollBatchStatus @default(finalized)
+  note                 String?            @db.Text
+  createdAt            DateTime           @default(now()) @db.DateTime(3)
+  updatedAt            DateTime           @updatedAt @db.DateTime(3)
+  tenant               Tenant             @relation(fields: [tenantId], references: [id])
+  branch               Branch?            @relation(fields: [branchId], references: [id])
+  items                PayrollBatchItem[]
+
+  @@index([tenantId, branchId, createdAt], map: "idx_payroll_batch_tenant_branch_created")
+}
+
+model PayrollBatchItem {
+  id                   String      @id @default(cuid())
+  tenantId             String
+  payrollBatchId       String
+  employeeId           String
+  workedMinutes        Int         @default(0)
+  lateMinutes          Int         @default(0)
+  grossAmount          Decimal     @default(0) @db.Decimal(18, 2)
+  deductionsAmount     Decimal     @default(0) @db.Decimal(18, 2)
+  creditDeductionAmount Decimal    @default(0) @db.Decimal(18, 2)
+  netAmount            Decimal     @default(0) @db.Decimal(18, 2)
+  note                 String?     @db.Text
+  createdAt            DateTime    @default(now()) @db.DateTime(3)
+  updatedAt            DateTime    @updatedAt @db.DateTime(3)
+  tenant               Tenant      @relation(fields: [tenantId], references: [id])
+  payrollBatch         PayrollBatch @relation(fields: [payrollBatchId], references: [id])
+  employee             EmployeeProfile @relation(fields: [employeeId], references: [id])
+
+  @@index([tenantId, payrollBatchId], map: "idx_payroll_item_tenant_batch")
+  @@index([tenantId, employeeId, createdAt], map: "idx_payroll_item_tenant_employee_created")
+}
+
+model Supplier {
+  id          String         @id @default(cuid())
+  tenantId    String
+  branchId    String?
+  name        String         @db.VarChar(191)
+  contactName String?        @db.VarChar(191)
+  phone       String?        @db.VarChar(32)
+  email       String?        @db.VarChar(191)
+  notes       String?        @db.Text
+  status      SupplierStatus @default(active)
+  createdAt   DateTime       @default(now()) @db.DateTime(3)
+  updatedAt   DateTime       @updatedAt @db.DateTime(3)
+  tenant      Tenant         @relation(fields: [tenantId], references: [id])
+  branch      Branch?        @relation(fields: [branchId], references: [id])
+  purchaseOrders PurchaseOrder[]
+
+  @@index([tenantId, branchId, status], map: "idx_supplier_tenant_branch_status")
+}
+
+model PurchaseOrder {
+  id          String              @id @default(cuid())
+  tenantId    String
+  branchId    String
+  supplierId  String
+  poNumber    String              @db.VarChar(64)
+  status      PurchaseOrderStatus @default(draft)
+  note        String?             @db.Text
+  orderedAt   DateTime?           @db.DateTime(3)
+  receivedAt  DateTime?           @db.DateTime(3)
+  createdAt   DateTime            @default(now()) @db.DateTime(3)
+  updatedAt   DateTime            @updatedAt @db.DateTime(3)
+  tenant      Tenant              @relation(fields: [tenantId], references: [id])
+  branch      Branch              @relation(fields: [branchId], references: [id])
+  supplier    Supplier            @relation(fields: [supplierId], references: [id])
+  items       PurchaseOrderItem[]
+
+  @@unique([tenantId, poNumber], map: "uq_purchase_order_tenant_number")
+  @@index([tenantId, branchId, status, createdAt], map: "idx_purchase_order_tenant_branch_status")
+}
+
+model PurchaseOrderItem {
+  id               String   @id @default(cuid())
+  tenantId         String
+  purchaseOrderId  String
+  productId        String
+  quantityOrdered  Decimal  @db.Decimal(18, 2)
+  quantityReceived Decimal  @default(0) @db.Decimal(18, 2)
+  unitCost         Decimal  @db.Decimal(18, 2)
+  createdAt        DateTime @default(now()) @db.DateTime(3)
+  updatedAt        DateTime @updatedAt @db.DateTime(3)
+  tenant           Tenant   @relation(fields: [tenantId], references: [id])
+  purchaseOrder    PurchaseOrder @relation(fields: [purchaseOrderId], references: [id])
+  product          Product  @relation(fields: [productId], references: [id])
+
+  @@index([tenantId, purchaseOrderId], map: "idx_purchase_order_item_tenant_order")
+}

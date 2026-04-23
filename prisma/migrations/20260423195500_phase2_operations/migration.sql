@@ -1,0 +1,182 @@
+CREATE TABLE `LeaveType` (
+  `id` VARCHAR(191) NOT NULL,
+  `tenantId` VARCHAR(191) NOT NULL,
+  `branchId` VARCHAR(191) NULL,
+  `name` VARCHAR(191) NOT NULL,
+  `code` VARCHAR(64) NOT NULL,
+  `isPaid` BOOLEAN NOT NULL DEFAULT TRUE,
+  `defaultBalanceDays` DECIMAL(10,2) NOT NULL DEFAULT 0,
+  `requiresDocument` BOOLEAN NOT NULL DEFAULT FALSE,
+  `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `updatedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_leave_type_tenant_code` (`tenantId`, `code`),
+  INDEX `idx_leave_type_tenant_branch` (`tenantId`, `branchId`),
+  CONSTRAINT `fk_leave_type_tenant` FOREIGN KEY (`tenantId`) REFERENCES `Tenant`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT `fk_leave_type_branch` FOREIGN KEY (`branchId`) REFERENCES `Branch`(`id`) ON DELETE SET NULL ON UPDATE CASCADE
+);
+
+CREATE TABLE `LeaveBalance` (
+  `id` VARCHAR(191) NOT NULL,
+  `tenantId` VARCHAR(191) NOT NULL,
+  `employeeId` VARCHAR(191) NOT NULL,
+  `leaveTypeId` VARCHAR(191) NOT NULL,
+  `balanceDays` DECIMAL(10,2) NOT NULL DEFAULT 0,
+  `usedDays` DECIMAL(10,2) NOT NULL DEFAULT 0,
+  `carriedOverDays` DECIMAL(10,2) NOT NULL DEFAULT 0,
+  `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `updatedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_leave_balance_employee_type` (`employeeId`, `leaveTypeId`),
+  INDEX `idx_leave_balance_tenant_employee` (`tenantId`, `employeeId`),
+  CONSTRAINT `fk_leave_balance_tenant` FOREIGN KEY (`tenantId`) REFERENCES `Tenant`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT `fk_leave_balance_employee` FOREIGN KEY (`employeeId`) REFERENCES `EmployeeProfile`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT `fk_leave_balance_type` FOREIGN KEY (`leaveTypeId`) REFERENCES `LeaveType`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
+CREATE TABLE `LeaveRequest` (
+  `id` VARCHAR(191) NOT NULL,
+  `tenantId` VARCHAR(191) NOT NULL,
+  `branchId` VARCHAR(191) NOT NULL,
+  `employeeId` VARCHAR(191) NOT NULL,
+  `leaveTypeId` VARCHAR(191) NOT NULL,
+  `startDate` DATE NOT NULL,
+  `endDate` DATE NOT NULL,
+  `dayCount` DECIMAL(10,2) NOT NULL,
+  `status` VARCHAR(32) NOT NULL DEFAULT 'pending',
+  `reason` TEXT NULL,
+  `managerNote` TEXT NULL,
+  `approvedByUserId` VARCHAR(191) NULL,
+  `approvedAt` DATETIME(3) NULL,
+  `rejectedAt` DATETIME(3) NULL,
+  `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `updatedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  PRIMARY KEY (`id`),
+  INDEX `idx_leave_request_tenant_branch_status` (`tenantId`, `branchId`, `status`, `startDate`),
+  INDEX `idx_leave_request_tenant_employee_status` (`tenantId`, `employeeId`, `status`, `startDate`),
+  CONSTRAINT `fk_leave_request_tenant` FOREIGN KEY (`tenantId`) REFERENCES `Tenant`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT `fk_leave_request_branch` FOREIGN KEY (`branchId`) REFERENCES `Branch`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT `fk_leave_request_employee` FOREIGN KEY (`employeeId`) REFERENCES `EmployeeProfile`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT `fk_leave_request_type` FOREIGN KEY (`leaveTypeId`) REFERENCES `LeaveType`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
+CREATE TABLE `CreditRequest` (
+  `id` VARCHAR(191) NOT NULL,
+  `tenantId` VARCHAR(191) NOT NULL,
+  `branchId` VARCHAR(191) NOT NULL,
+  `employeeId` VARCHAR(191) NOT NULL,
+  `amount` DECIMAL(18,2) NOT NULL,
+  `approvedAmount` DECIMAL(18,2) NULL,
+  `repaidAmount` DECIMAL(18,2) NOT NULL DEFAULT 0,
+  `status` VARCHAR(32) NOT NULL DEFAULT 'pending',
+  `reason` TEXT NULL,
+  `ownerNote` TEXT NULL,
+  `requestedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `approvedAt` DATETIME(3) NULL,
+  `settledAt` DATETIME(3) NULL,
+  `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `updatedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  PRIMARY KEY (`id`),
+  INDEX `idx_credit_request_tenant_branch_status` (`tenantId`, `branchId`, `status`, `requestedAt`),
+  INDEX `idx_credit_request_tenant_employee_status` (`tenantId`, `employeeId`, `status`, `requestedAt`),
+  CONSTRAINT `fk_credit_request_tenant` FOREIGN KEY (`tenantId`) REFERENCES `Tenant`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT `fk_credit_request_branch` FOREIGN KEY (`branchId`) REFERENCES `Branch`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT `fk_credit_request_employee` FOREIGN KEY (`employeeId`) REFERENCES `EmployeeProfile`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
+CREATE TABLE `PayrollBatch` (
+  `id` VARCHAR(191) NOT NULL,
+  `tenantId` VARCHAR(191) NOT NULL,
+  `branchId` VARCHAR(191) NULL,
+  `actorUserId` VARCHAR(191) NOT NULL,
+  `fromDate` DATE NOT NULL,
+  `toDate` DATE NOT NULL,
+  `hourlyRate` DECIMAL(18,2) NOT NULL DEFAULT 0,
+  `latePenaltyPerMinute` DECIMAL(18,2) NOT NULL DEFAULT 0,
+  `includeCreditDeductions` BOOLEAN NOT NULL DEFAULT TRUE,
+  `status` VARCHAR(32) NOT NULL DEFAULT 'finalized',
+  `note` TEXT NULL,
+  `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `updatedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  PRIMARY KEY (`id`),
+  INDEX `idx_payroll_batch_tenant_branch_created` (`tenantId`, `branchId`, `createdAt`),
+  CONSTRAINT `fk_payroll_batch_tenant` FOREIGN KEY (`tenantId`) REFERENCES `Tenant`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT `fk_payroll_batch_branch` FOREIGN KEY (`branchId`) REFERENCES `Branch`(`id`) ON DELETE SET NULL ON UPDATE CASCADE
+);
+
+CREATE TABLE `PayrollBatchItem` (
+  `id` VARCHAR(191) NOT NULL,
+  `tenantId` VARCHAR(191) NOT NULL,
+  `payrollBatchId` VARCHAR(191) NOT NULL,
+  `employeeId` VARCHAR(191) NOT NULL,
+  `workedMinutes` INT NOT NULL DEFAULT 0,
+  `lateMinutes` INT NOT NULL DEFAULT 0,
+  `grossAmount` DECIMAL(18,2) NOT NULL DEFAULT 0,
+  `deductionsAmount` DECIMAL(18,2) NOT NULL DEFAULT 0,
+  `creditDeductionAmount` DECIMAL(18,2) NOT NULL DEFAULT 0,
+  `netAmount` DECIMAL(18,2) NOT NULL DEFAULT 0,
+  `note` TEXT NULL,
+  `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `updatedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  PRIMARY KEY (`id`),
+  INDEX `idx_payroll_item_tenant_batch` (`tenantId`, `payrollBatchId`),
+  INDEX `idx_payroll_item_tenant_employee_created` (`tenantId`, `employeeId`, `createdAt`),
+  CONSTRAINT `fk_payroll_item_tenant` FOREIGN KEY (`tenantId`) REFERENCES `Tenant`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT `fk_payroll_item_batch` FOREIGN KEY (`payrollBatchId`) REFERENCES `PayrollBatch`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT `fk_payroll_item_employee` FOREIGN KEY (`employeeId`) REFERENCES `EmployeeProfile`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
+CREATE TABLE `Supplier` (
+  `id` VARCHAR(191) NOT NULL,
+  `tenantId` VARCHAR(191) NOT NULL,
+  `branchId` VARCHAR(191) NULL,
+  `name` VARCHAR(191) NOT NULL,
+  `contactName` VARCHAR(191) NULL,
+  `phone` VARCHAR(32) NULL,
+  `email` VARCHAR(191) NULL,
+  `notes` TEXT NULL,
+  `status` VARCHAR(32) NOT NULL DEFAULT 'active',
+  `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `updatedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  PRIMARY KEY (`id`),
+  INDEX `idx_supplier_tenant_branch_status` (`tenantId`, `branchId`, `status`),
+  CONSTRAINT `fk_supplier_tenant` FOREIGN KEY (`tenantId`) REFERENCES `Tenant`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT `fk_supplier_branch` FOREIGN KEY (`branchId`) REFERENCES `Branch`(`id`) ON DELETE SET NULL ON UPDATE CASCADE
+);
+
+CREATE TABLE `PurchaseOrder` (
+  `id` VARCHAR(191) NOT NULL,
+  `tenantId` VARCHAR(191) NOT NULL,
+  `branchId` VARCHAR(191) NOT NULL,
+  `supplierId` VARCHAR(191) NOT NULL,
+  `poNumber` VARCHAR(64) NOT NULL,
+  `status` VARCHAR(32) NOT NULL DEFAULT 'draft',
+  `note` TEXT NULL,
+  `orderedAt` DATETIME(3) NULL,
+  `receivedAt` DATETIME(3) NULL,
+  `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `updatedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_purchase_order_tenant_number` (`tenantId`, `poNumber`),
+  INDEX `idx_purchase_order_tenant_branch_status` (`tenantId`, `branchId`, `status`, `createdAt`),
+  CONSTRAINT `fk_purchase_order_tenant` FOREIGN KEY (`tenantId`) REFERENCES `Tenant`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT `fk_purchase_order_branch` FOREIGN KEY (`branchId`) REFERENCES `Branch`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT `fk_purchase_order_supplier` FOREIGN KEY (`supplierId`) REFERENCES `Supplier`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
+CREATE TABLE `PurchaseOrderItem` (
+  `id` VARCHAR(191) NOT NULL,
+  `tenantId` VARCHAR(191) NOT NULL,
+  `purchaseOrderId` VARCHAR(191) NOT NULL,
+  `productId` VARCHAR(191) NOT NULL,
+  `quantityOrdered` DECIMAL(18,2) NOT NULL,
+  `quantityReceived` DECIMAL(18,2) NOT NULL DEFAULT 0,
+  `unitCost` DECIMAL(18,2) NOT NULL,
+  `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `updatedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  PRIMARY KEY (`id`),
+  INDEX `idx_purchase_order_item_tenant_order` (`tenantId`, `purchaseOrderId`),
+  CONSTRAINT `fk_purchase_order_item_tenant` FOREIGN KEY (`tenantId`) REFERENCES `Tenant`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT `fk_purchase_order_item_order` FOREIGN KEY (`purchaseOrderId`) REFERENCES `PurchaseOrder`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT `fk_purchase_order_item_product` FOREIGN KEY (`productId`) REFERENCES `Product`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE
+);

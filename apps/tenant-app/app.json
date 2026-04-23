@@ -1,0 +1,14 @@
+{
+  "expo": {
+    "name": "AdeyApp Tenant",
+    "slug": "adeyapp-tenant",
+    "scheme": "adeyapp-tenant",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "plugins": ["expo-router"],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
