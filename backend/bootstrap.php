@@ -300,6 +300,8 @@ function authenticated_user(): array
     } catch (Throwable $exception) {
         error_response('Invalid or expired token', 401, 'unauthorized');
     }
+
+    return [];
 }
 
 function db_one(PDOStatement $statement): ?array

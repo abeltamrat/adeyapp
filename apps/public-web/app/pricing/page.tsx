@@ -2,7 +2,7 @@ export default function PricingPage() {
   return (
     <main className="page-stack">
       {/* Page Header */}
-      <section style={{ textAlign: 'center', maxWidth: '800px', margin: '0 auto 60px' }}>
+      <section className="text-center max-w-800 mx-auto mb-60">
         <span className="eyebrow">Pricing & Plans</span>
         <h1 className="page-title">Plans that match your growth.</h1>
         <p className="muted hero-lead">
@@ -24,7 +24,7 @@ export default function PricingPage() {
             <li>Customer self-booking portal</li>
             <li>Email & Push notifications</li>
           </ul>
-          <a href="/signup" className="button-secondary" style={{ marginTop: 'auto', textAlign: 'center' }}>Start with Starter</a>
+          <a href="/signup" className="button-secondary mt-auto text-center">Start with Starter</a>
         </article>
 
         <article className="section-card pricing-card pricing-card-highlight">
@@ -39,7 +39,7 @@ export default function PricingPage() {
             <li>Inventory & Procurement control</li>
             <li>Payroll & employee credit flows</li>
           </ul>
-          <a href="/signup" className="button" style={{ marginTop: 'auto', textAlign: 'center' }}>Scale with Growth</a>
+          <a href="/signup" className="button mt-auto text-center">Scale with Growth</a>
         </article>
 
         <article className="section-card pricing-card">
@@ -54,53 +54,53 @@ export default function PricingPage() {
             <li>Platform-level API access</li>
             <li>Dedicated rollout success manager</li>
           </ul>
-          <a href="/contact" className="button-secondary" style={{ marginTop: 'auto', textAlign: 'center' }}>Talk to Sales</a>
+          <a href="/contact" className="button-secondary mt-auto text-center">Talk to Sales</a>
         </article>
       </section>
 
       {/* Comparison Table */}
-      <section className="section-card" style={{ padding: '60px' }}>
-        <h2 className="section-title" style={{ textAlign: 'left', marginBottom: '40px' }}>Compare capabilities</h2>
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+      <section className="section-card p-60">
+        <h2 className="section-title text-left mb-40">Compare capabilities</h2>
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse text-left">
             <thead>
-              <tr style={{ borderBottom: '2px solid var(--line)' }}>
-                <th style={{ padding: '16px 8px', color: 'var(--muted)', fontWeight: '600' }}>Feature</th>
-                <th style={{ padding: '16px 8px', color: 'var(--ink)', fontWeight: '700' }}>Starter</th>
-                <th style={{ padding: '16px 8px', color: 'var(--ink)', fontWeight: '700' }}>Growth</th>
-                <th style={{ padding: '16px 8px', color: 'var(--ink)', fontWeight: '700' }}>Enterprise</th>
+              <tr className="border-b-2">
+                <th className="p-16-8 muted font-semi">Feature</th>
+                <th className="p-16-8 ink bold">Starter</th>
+                <th className="p-16-8 ink bold">Growth</th>
+                <th className="p-16-8 ink bold">Enterprise</th>
               </tr>
             </thead>
-            <tbody style={{ color: 'var(--muted)' }}>
-              <tr style={{ borderBottom: '1px solid var(--line)' }}>
-                <td style={{ padding: '16px 8px', fontWeight: '500', color: 'var(--ink)' }}>Branch Count</td>
-                <td style={{ padding: '16px 8px' }}>Single</td>
-                <td style={{ padding: '16px 8px' }}>Unlimited</td>
-                <td style={{ padding: '16px 8px' }}>Unlimited</td>
+            <tbody className="muted">
+              <tr className="border-b">
+                <td className="p-16-8 font-semi ink">Branch Count</td>
+                <td className="p-16-8">Single</td>
+                <td className="p-16-8">Unlimited</td>
+                <td className="p-16-8">Unlimited</td>
               </tr>
-              <tr style={{ borderBottom: '1px solid var(--line)' }}>
-                <td style={{ padding: '16px 8px', fontWeight: '500', color: 'var(--ink)' }}>Booking Desk</td>
-                <td style={{ padding: '16px 8px' }}>✓</td>
-                <td style={{ padding: '16px 8px' }}>✓</td>
-                <td style={{ padding: '16px 8px' }}>✓</td>
+              <tr className="border-b">
+                <td className="p-16-8 font-semi ink">Booking Desk</td>
+                <td className="p-16-8">✓</td>
+                <td className="p-16-8">✓</td>
+                <td className="p-16-8">✓</td>
               </tr>
-              <tr style={{ borderBottom: '1px solid var(--line)' }}>
-                <td style={{ padding: '16px 8px', fontWeight: '500', color: 'var(--ink)' }}>Shift/Leave Tools</td>
-                <td style={{ padding: '16px 8px' }}>Basic</td>
-                <td style={{ padding: '16px 8px' }}>Advanced</td>
-                <td style={{ padding: '16px 8px' }}>Advanced</td>
+              <tr className="border-b">
+                <td className="p-16-8 font-semi ink">Shift/Leave Tools</td>
+                <td className="p-16-8">Basic</td>
+                <td className="p-16-8">Advanced</td>
+                <td className="p-16-8">Advanced</td>
               </tr>
-              <tr style={{ borderBottom: '1px solid var(--line)' }}>
-                <td style={{ padding: '16px 8px', fontWeight: '500', color: 'var(--ink)' }}>Inventory Control</td>
-                <td style={{ padding: '16px 8px' }}>-</td>
-                <td style={{ padding: '16px 8px' }}>✓</td>
-                <td style={{ padding: '16px 8px' }}>✓</td>
+              <tr className="border-b">
+                <td className="p-16-8 font-semi ink">Inventory Control</td>
+                <td className="p-16-8">-</td>
+                <td className="p-16-8">✓</td>
+                <td className="p-16-8">✓</td>
               </tr>
-              <tr style={{ borderBottom: '1px solid var(--line)' }}>
-                <td style={{ padding: '16px 8px', fontWeight: '500', color: 'var(--ink)' }}>Whitelabel Path</td>
-                <td style={{ padding: '16px 8px' }}>-</td>
-                <td style={{ padding: '16px 8px' }}>Limited</td>
-                <td style={{ padding: '16px 8px' }}>Full Priority</td>
+              <tr className="border-b">
+                <td className="p-16-8 font-semi ink">Whitelabel Path</td>
+                <td className="p-16-8">-</td>
+                <td className="p-16-8">Limited</td>
+                <td className="p-16-8">Full Priority</td>
               </tr>
             </tbody>
           </table>
@@ -108,9 +108,9 @@ export default function PricingPage() {
       </section>
 
       {/* FAQ Teaser */}
-      <section style={{ textAlign: 'center', background: 'var(--brand-soft)', padding: '60px', borderRadius: 'var(--radius-lg)' }}>
-        <h2 style={{ marginBottom: '16px' }}>Frequently Asked Questions</h2>
-        <p className="muted" style={{ marginBottom: '32px' }}>Have more questions about our plans?</p>
+      <section className="text-center bg-brand-soft p-60 rounded-lg">
+        <h2 className="mb-16">Frequently Asked Questions</h2>
+        <p className="muted mb-32">Have more questions about our plans?</p>
         <a href="/help" className="button-secondary">Visit Help Center</a>
       </section>
     </main>
