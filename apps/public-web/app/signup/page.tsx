@@ -22,9 +22,9 @@ export default function SignupPage() {
             access from the tenant onboarding flow.
           </p>
           <div className="cta-row">
-            <a className="button" href="exp://127.0.0.1:8081/login">
+            <Link className="button" href="/app">
               Start owner onboarding
-            </a>
+            </Link>
           </div>
         </article>
 
@@ -36,9 +36,9 @@ export default function SignupPage() {
             appointment history.
           </p>
           <div className="cta-row">
-            <a className="button" href="exp://127.0.0.1:8082/login">
+            <Link className="button" href="/customer">
               Open customer app
-            </a>
+            </Link>
           </div>
         </article>
 
