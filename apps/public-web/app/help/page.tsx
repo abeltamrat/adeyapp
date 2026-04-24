@@ -39,7 +39,7 @@ export default function HelpPage() {
         </article>
 
         <article className="section-card">
-          <div className="feature-icon bg-brand-soft" style={{ color: 'var(--brand)' }}>⌚</div>
+          <div className="feature-icon feature-icon-brand">⌚</div>
           <h3>Staff & Attendance</h3>
           <p className="muted mb-16">Guidelines for employee check-ins, shift planning, and leave management.</p>
           <ul className="feature-list font-sm">
@@ -67,7 +67,7 @@ export default function HelpPage() {
       <section>
         <h2 className="section-title">Common Questions</h2>
         <div className="grid-gap-32 feature-grid">
-          <div style={{ display: 'grid', gap: '32px' }}>
+          <div className="grid-gap-32">
             <div>
               <h4 className="mb-12">Can I manage multiple locations?</h4>
               <p className="muted">Yes, AdeyApp is built for multi-branch operations. You can switch between branches seamlessly from your dashboard.</p>
