@@ -16,3 +16,5 @@ scratch/
 *.tmp
 Thumbs.db
 .DS_Store
+out/
+deploy_bundle/
