@@ -24,19 +24,19 @@ jobs:
           cache: pnpm
 
       - name: Install Dependencies
-        run: corepack pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       - name: Build Marketing Site (Public Web)
-        run: corepack pnpm --filter @adeyapp/public-web build
+        run: pnpm --filter @adeyapp/public-web build
 
       - name: Build Tenant App (Expo Web)
-        run: corepack pnpm --filter @adeyapp/tenant-app build
+        run: pnpm --filter @adeyapp/tenant-app build
 
       - name: Build Customer App (Expo Web)
-        run: corepack pnpm --filter @adeyapp/customer-app build
+        run: pnpm --filter @adeyapp/customer-app build
 
       - name: Build Superadmin Web (Next.js)
-        run: corepack pnpm --filter @adeyapp/superadmin-web build
+        run: pnpm --filter @adeyapp/superadmin-web build
 
       - name: Prepare Deployment Directory
         run: |
