@@ -23,6 +23,11 @@
     "owner": "abeltamrat",
     "android": {
       "package": "com.adeyapp.customer"
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static",
+      "baseUrl": "/customer"
     }
   }
 }

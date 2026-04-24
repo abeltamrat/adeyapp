@@ -172,7 +172,7 @@ export default function DashboardPage() {
                 <p className="muted">
                   {tenant.slug} | {tenant.status} | {tenant.currentPlanCode ?? "no plan"}
                 </p>
-                <Link href={`/tenants/${tenant.id}`}>Open tenant</Link>
+                <Link href={`/tenants/detail?tenantId=${tenant.id}`}>Open tenant</Link>
               </div>
             ))}
           </div>
@@ -199,7 +199,7 @@ export default function DashboardPage() {
                   Unread inbox: {tenant.unreadNotificationCount} | Open support:{" "}
                   {tenant.openSupportTicketCount}
                 </p>
-                <Link href={`/tenants/${tenant.tenantId}`}>Open tenant</Link>
+                <Link href={`/tenants/detail?tenantId=${tenant.tenantId}`}>Open tenant</Link>
               </div>
             ))}
           </div>

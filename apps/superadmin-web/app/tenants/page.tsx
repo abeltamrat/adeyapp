@@ -99,7 +99,7 @@ export default function TenantsPage() {
               {tenant.subscriptionStatus ?? "untracked"}
             </p>
             <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-              <Link href={`/tenants/${tenant.id}`}>Open detail</Link>
+              <Link href={`/tenants/detail?tenantId=${tenant.id}`}>Open detail</Link>
               {tenant.status !== "active" ? (
                 <button
                   disabled={updatingTenantId === tenant.id}

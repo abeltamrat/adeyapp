@@ -18,7 +18,16 @@ RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^app/.*$ app/index.html [L]
 
-# 4. Marketing Site (Root)
+# 4. Customer App Routing
+# Directs /customer/ calls to the Expo Web build
+RewriteCond %{REQUEST_URI} ^/customer
+RewriteRule ^customer/(.*)$ customer/$1 [L]
+RewriteCond %{REQUEST_URI} ^/customer
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^customer/.*$ customer/index.html [L]
+
+# 5. Marketing Site (Root)
 # Handled by the static export files in the root
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d

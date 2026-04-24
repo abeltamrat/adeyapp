@@ -1,8 +1,8 @@
 "use client";
 
 import { ApiError } from "@adeyapp/api-client";
-import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
 import type { SuperadminTenantDetail } from "@adeyapp/types";
 import {
   clearSuperadminToken,
@@ -11,10 +11,10 @@ import {
   superadminApi
 } from "../../../lib/api";
 
-export default function TenantDetailPage() {
-  const params = useParams<{ tenantId: string }>();
+function TenantDetailContent() {
   const router = useRouter();
-  const tenantId = typeof params?.tenantId === "string" ? params.tenantId : "";
+  const searchParams = useSearchParams();
+  const tenantId = searchParams.get("tenantId") ?? "";
   const [tenant, setTenant] = useState<SuperadminTenantDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState<string | null>(null);
@@ -37,6 +37,12 @@ export default function TenantDetailPage() {
   useEffect(() => {
     if (!hasSuperadminToken()) {
       router.replace("/login");
+      return;
+    }
+
+    if (!tenantId) {
+      setLoading(false);
+      setMessage("Choose a tenant from the dashboard or tenant list first.");
       return;
     }
 
@@ -77,9 +83,7 @@ export default function TenantDetailPage() {
       }
     }
 
-    if (tenantId) {
-      void loadTenant();
-    }
+    void loadTenant();
 
     return () => {
       active = false;
@@ -201,15 +205,15 @@ export default function TenantDetailPage() {
           <>
             <h1>{tenant.name}</h1>
             <p className="muted">
-              {tenant.slug} • {tenant.status} • {tenant.currentPlanCode ?? "no plan"}
+              {tenant.slug} - {tenant.status} - {tenant.currentPlanCode ?? "no plan"}
             </p>
             <p className="muted">Owner: {tenant.ownerEmail ?? "unknown"}</p>
             <p className="muted">
-              Branches: {tenant.branchCount} • Employees: {tenant.employeeCount} • Appointments:{" "}
+              Branches: {tenant.branchCount} - Employees: {tenant.employeeCount} - Appointments:{" "}
               {tenant.appointmentCount}
             </p>
             <p className="muted">
-              Subscription: {tenant.subscriptionStatus ?? "untracked"} • Renews:{" "}
+              Subscription: {tenant.subscriptionStatus ?? "untracked"} - Renews:{" "}
               {tenant.renewsAt ?? "n/a"}
             </p>
             <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
@@ -252,7 +256,7 @@ export default function TenantDetailPage() {
           <>
             <h2>{tenant.latestInvoice.invoiceNumber}</h2>
             <p className="muted">
-              {tenant.latestInvoice.status} • {tenant.latestInvoice.totalAmount}
+              {tenant.latestInvoice.status} - {tenant.latestInvoice.totalAmount}
             </p>
             <p className="muted">Due: {tenant.latestInvoice.dueAt ?? "n/a"}</p>
           </>
@@ -273,7 +277,7 @@ export default function TenantDetailPage() {
           <>
             <h2>{tenant.latestPayment.amount}</h2>
             <p className="muted">
-              {tenant.latestPayment.status} • {tenant.latestPayment.paymentMethod}
+              {tenant.latestPayment.status} - {tenant.latestPayment.paymentMethod}
             </p>
             <p className="muted">Paid at: {tenant.latestPayment.paidAt ?? "n/a"}</p>
           </>
@@ -350,5 +354,22 @@ export default function TenantDetailPage() {
         </article>
       ) : null}
     </section>
+  );
+}
+
+export default function TenantDetailPage() {
+  return (
+    <Suspense
+      fallback={
+        <section className="grid">
+          <article className="panel">
+            <p className="eyebrow">Tenant Detail</p>
+            <p className="muted">Loading tenant detail...</p>
+          </article>
+        </section>
+      }
+    >
+      <TenantDetailContent />
+    </Suspense>
   );
 }

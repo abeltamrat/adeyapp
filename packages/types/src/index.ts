@@ -517,12 +517,14 @@ export interface AppointmentSummary {
   branchName: string;
   customerId: string;
   customerName: string;
+  customerFullName: string;
   customerPhone?: string | null;
   roomId?: string | null;
   roomName?: string | null;
   employeeId?: string | null;
   employeeEmail?: string | null;
   employeeCode?: string | null;
+  serviceName: string;
   status: AppointmentStatus;
   source: "customer_app" | "reception" | "manager" | "owner";
   notes?: string | null;

@@ -351,7 +351,7 @@ export default function ReceptionScreen() {
                         <Text style={styles.statusBadgeText}>{apt.status.replace('_', ' ')}</Text>
                       </View>
                     </View>
-                    <Text style={styles.aptCustomer}>{apt.customerFullName}</Text>
+                    <Text style={styles.aptCustomer}>{apt.customerName}</Text>
                     <Text style={styles.aptService}>{apt.serviceName} • {apt.employeeCode || 'Unassigned'}</Text>
                     
                     <View style={styles.aptActions}>

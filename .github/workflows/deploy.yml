@@ -16,6 +16,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: pnpm
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
@@ -23,22 +24,23 @@ jobs:
           version: 9.12.3
 
       - name: Install Dependencies
-        run: pnpm install
+        run: corepack pnpm install --frozen-lockfile
 
       - name: Build Marketing Site (Public Web)
-        run: npx next build apps/public-web
+        run: corepack pnpm --filter @adeyapp/public-web build
 
       - name: Build Tenant App (Expo Web)
-        run: pnpm --filter tenant-app build
+        run: corepack pnpm --filter @adeyapp/tenant-app build
 
       - name: Build Customer App (Expo Web)
-        run: pnpm --filter customer-app build
+        run: corepack pnpm --filter @adeyapp/customer-app build
 
       - name: Build Superadmin Web (Next.js)
-        run: npx next build apps/superadmin-web
+        run: corepack pnpm --filter @adeyapp/superadmin-web build
 
       - name: Prepare Deployment Directory
         run: |
+          rm -rf deploy_bundle
           mkdir deploy_bundle
           # Copy built marketing site to root
           cp -r apps/public-web/out/* deploy_bundle/
@@ -56,7 +58,6 @@ jobs:
           cp -r apps/superadmin-web/out/* deploy_bundle/admin/
           # Copy root config files
           cp .htaccess deploy_bundle/
-          [ -f .env ] && cp .env deploy_bundle/ || echo ".env not found, skipping"
           # Ensure storage exists (empty placeholder)
           mkdir -p deploy_bundle/storage
 
