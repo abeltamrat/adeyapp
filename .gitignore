@@ -11,6 +11,7 @@ coverage/
 .env.*.local
 storage/
 scratch/
+*.tsbuildinfo
 *.log
 *.tmp
 Thumbs.db

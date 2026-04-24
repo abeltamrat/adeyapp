@@ -1,0 +1,25 @@
+RewriteEngine On
+
+# 1. API Routing
+# Directs /api/ calls to the backend router
+RewriteRule ^api/(.*)$ backend/public/index.php [QSA,L]
+
+# 2. Storage Access
+# Directs /storage/ calls to the storage folder
+RewriteRule ^storage/(.*)$ storage/$1 [L]
+
+# 3. App Routing
+# Directs /app/ calls to the Expo Web build
+# Note: Expo Router for Web handles its own sub-routing
+RewriteCond %{REQUEST_URI} ^/app
+RewriteRule ^app/(.*)$ app/$1 [L]
+RewriteCond %{REQUEST_URI} ^/app
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^app/.*$ app/index.html [L]
+
+# 4. Marketing Site (Root)
+# Handled by the static export files in the root
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.html [L]

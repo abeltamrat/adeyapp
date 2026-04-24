@@ -22,6 +22,9 @@ For detailed completion tracking, see:
 
 - [PHASE1_STATUS.md](PHASE1_STATUS.md)
 - [PHASE2_STATUS.md](PHASE2_STATUS.md)
+- [PHASE3_PLAN.md](PHASE3_PLAN.md)
+- [DEPLOYMENT_RUNBOOK.md](DEPLOYMENT_RUNBOOK.md)
+- [PUBLIC_WEB_PHASE3.md](PUBLIC_WEB_PHASE3.md)
 
 ## Architecture
 
@@ -247,4 +250,3 @@ Now that phase 1 and phase 2 are complete for the defined scopes, the next sensi
 2. deployment hardening for hosted MySQL and cPanel
 3. public-web polish
 4. deeper calendar, POS, analytics, and GPS attendance work
-

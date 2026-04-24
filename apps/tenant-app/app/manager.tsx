@@ -210,235 +210,169 @@ export default function ManagerScreen() {
 
   return (
     <SafeAreaView style={styles.screen}>
-      <ScrollView contentContainerStyle={styles.content}>
-        <View style={styles.card}>
-          <Text style={styles.eyebrow}>Manager</Text>
-          <Text style={styles.title}>Branch operations desk</Text>
-          <Text style={styles.copy}>
-            Review attendance exceptions, open staff sessions, and jump straight into front desk booking control.
-          </Text>
-          <Text style={styles.meta}>
-            Active branch: {session?.context?.branchId ?? "No branch context"}
-          </Text>
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        {/* Header Section */}
+        <View style={styles.header}>
+          <View>
+            <Text style={styles.eyebrow}>Manager Dashboard</Text>
+            <Text style={styles.title}>Branch Operations</Text>
+          </View>
+          <View style={styles.headerIcons}>
+            <Pressable onPress={() => router.push("/notifications" as never)} style={styles.iconButton}>
+              <Text style={{ fontSize: 18 }}>🔔</Text>
+            </Pressable>
+          </View>
+        </View>
 
-          <Pressable
-            disabled={acknowledgementRequired}
-            onPress={() => router.push("/reception")}
-            style={[styles.primaryButton, acknowledgementRequired ? styles.buttonDisabled : null]}
-          >
-            <Text style={styles.primaryButtonText}>Open front desk</Text>
-          </Pressable>
-          <Pressable onPress={() => router.push("/notifications" as never)} style={styles.primaryButton}>
-            <Text style={styles.primaryButtonText}>Open inbox</Text>
-          </Pressable>
-          {acknowledgement?.enabled ? (
-            <View style={styles.listCard}>
-              <Text style={styles.sectionTitle}>{acknowledgement.title}</Text>
-              <Text style={styles.recordMeta}>Version {acknowledgement.version}</Text>
-              <Text style={styles.recordMeta}>{acknowledgement.body}</Text>
-              <Text style={styles.recordMeta}>
-                {acknowledgementRequired
-                  ? "Acknowledgement is required before manager attendance and staff actions continue."
-                  : acknowledgement.acknowledged
-                    ? `Acknowledged${acknowledgement.acknowledgedAt ? ` on ${new Date(acknowledgement.acknowledgedAt).toLocaleString()}` : ""}.`
-                    : "Acknowledgement is available for this workspace."}
-              </Text>
-              {acknowledgementRequired ? (
-                <Pressable
-                  disabled={acknowledging}
-                  onPress={() => void acknowledgePolicy()}
-                  style={styles.primaryButton}
-                >
-                  {acknowledging ? (
-                    <ActivityIndicator color="#FFFFFF" />
-                  ) : (
-                    <Text style={styles.primaryButtonText}>Acknowledge policy</Text>
-                  )}
-                </Pressable>
-              ) : null}
+        {/* Stats Grid */}
+        <View style={styles.statsGrid}>
+          <View style={styles.statCard}>
+            <Text style={styles.statLabel}>Exceptions</Text>
+            <Text style={[styles.statValue, exceptionRecords.length > 0 ? { color: '#EF4444' } : null]}>
+              {exceptionRecords.length}
+            </Text>
+          </View>
+          <View style={[styles.statCard, { borderLeftWidth: 1, borderLeftColor: '#E2E8F0' }]}>
+            <Text style={styles.statLabel}>Corrections</Text>
+            <Text style={styles.statValue}>{corrections.length}</Text>
+          </View>
+          <View style={[styles.statCard, { borderLeftWidth: 1, borderLeftColor: '#E2E8F0' }]}>
+            <Text style={styles.statLabel}>Total Staff</Text>
+            <Text style={styles.statValue}>{employees.length}</Text>
+          </View>
+        </View>
+
+        {/* Policy Notice */}
+        {acknowledgement?.enabled && (
+          <View style={styles.policyNotice}>
+            <Text style={styles.sectionTitle}>{acknowledgement.title}</Text>
+            <Text style={styles.policyBody} numberOfLines={2}>{acknowledgement.body}</Text>
+            {acknowledgementRequired && (
+              <Pressable
+                disabled={acknowledging}
+                onPress={() => void acknowledgePolicy()}
+                style={styles.acknowledgeButton}
+              >
+                {acknowledging ? (
+                  <ActivityIndicator color="white" size="small" />
+                ) : (
+                  <Text style={styles.acknowledgeButtonText}>Acknowledge Policy</Text>
+                )}
+              </Pressable>
+            )}
+          </View>
+        )}
+
+        {/* Loading / Main Content */}
+        {loading ? (
+          <ActivityIndicator color="#1D5C63" style={{ marginTop: 40 }} />
+        ) : (
+          <>
+            {/* Quick Actions */}
+            <View style={styles.section}>
+              <Pressable
+                disabled={acknowledgementRequired}
+                onPress={() => router.push("/reception")}
+                style={[styles.primaryAction, acknowledgementRequired && styles.disabledAction]}
+              >
+                <Text style={styles.primaryActionIcon}>🛎️</Text>
+                <Text style={styles.primaryActionText}>Open Front Desk</Text>
+              </Pressable>
             </View>
-          ) : null}
 
-          {loading ? (
-            <ActivityIndicator color="#1D5C63" />
-          ) : (
-            <>
-              <Text style={styles.sectionTitle}>Attendance exceptions</Text>
-              <View style={styles.listCard}>
-                {exceptionRecords.length ? (
-                  exceptionRecords.map((record) => (
-                    <View key={record.id} style={styles.recordCard}>
-                      <Text style={styles.recordTitle}>
-                        {record.employeeCode || "Employee"} | {record.employeeEmail || "No email"}
-                      </Text>
-                      <Text style={styles.recordMeta}>
-                        Status: {record.attendanceStatus}
-                        {!record.checkOutAt ? " | Open session" : ""}
-                      </Text>
-                      <Text style={styles.recordMeta}>
-                        Shift: {record.shiftTemplateName || "No shift"} | Lateness: {record.latenessMinutes} min
-                      </Text>
-                      <Text style={styles.recordMeta}>
-                        Network: {record.networkIdentifier || "Not provided"}
-                      </Text>
-                      <View style={styles.actionRow}>
-                        {policies.managerCanCorrectAttendance &&
-                          (record.exceptionFlag || record.latenessMinutes > 0) && (
-                          <Pressable
-                            onPress={() =>
-                              void runCorrection(record, {
-                                attendanceStatus: "present",
-                                latenessMinutes: 0,
-                                exceptionFlag: false,
-                                note: "Manager cleared lateness and flag"
-                              })
-                            }
-                            disabled={busyRecordId === record.id || acknowledgementRequired}
-                            style={[
-                              styles.actionButton,
-                              acknowledgementRequired ? styles.actionButtonDisabled : null,
-                              busyRecordId === record.id ? styles.actionButtonDisabled : null
-                            ]}
-                          >
-                            <Text style={styles.actionButtonText}>Resolve</Text>
-                          </Pressable>
-                        )}
-                        {policies.managerCanCorrectAttendance && !record.checkOutAt && (
-                          <Pressable
-                            onPress={() =>
-                              void runCorrection(record, {
-                                checkOutAt: new Date().toISOString(),
-                                note: "Manager closed open attendance session"
-                              })
-                            }
-                            disabled={busyRecordId === record.id || acknowledgementRequired}
-                            style={[
-                              styles.actionButtonSecondary,
-                              acknowledgementRequired ? styles.actionButtonDisabled : null,
-                              busyRecordId === record.id ? styles.actionButtonDisabled : null
-                            ]}
-                          >
-                            <Text style={styles.actionButtonSecondaryText}>Close session</Text>
-                          </Pressable>
-                        )}
-                        {policies.managerCanCorrectAttendance && record.attendanceStatus !== "absent" && (
-                          <Pressable
-                            onPress={() =>
-                              void runCorrection(record, {
-                                attendanceStatus: "absent",
-                                exceptionFlag: true,
-                                note: "Manager marked attendance absent"
-                              })
-                            }
-                            disabled={busyRecordId === record.id || acknowledgementRequired}
-                            style={[
-                              styles.actionButtonDanger,
-                              acknowledgementRequired ? styles.actionButtonDisabled : null,
-                              busyRecordId === record.id ? styles.actionButtonDisabled : null
-                            ]}
-                          >
-                            <Text style={styles.actionButtonText}>Mark absent</Text>
-                          </Pressable>
-                        )}
+            {/* Exceptions Section */}
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Attendance Exceptions</Text>
+              {exceptionRecords.length > 0 ? (
+                exceptionRecords.map((record) => (
+                  <View key={record.id} style={styles.recordCard}>
+                    <View style={styles.recordHeader}>
+                      <Text style={styles.employeeName}>{record.employeeCode || "Employee"}</Text>
+                      <View style={[styles.badge, record.exceptionFlag ? styles.badgeDanger : styles.badgeWarning]}>
+                        <Text style={styles.badgeText}>{record.attendanceStatus}</Text>
                       </View>
                     </View>
-                  ))
-                ) : (
-                  <Text style={styles.emptyText}>No active exceptions for this branch today.</Text>
-                )}
-              </View>
-
-              <Text style={styles.sectionTitle}>Today's corrections</Text>
-              <View style={styles.listCard}>
-                {corrections.length ? (
-                  corrections.map((item) => (
-                    <View key={item.id} style={styles.recordCard}>
-                      <Text style={styles.recordTitle}>
-                        {item.employeeCode || "Employee"} | {item.employeeEmail || "No email"}
-                      </Text>
-                      <Text style={styles.recordMeta}>
-                        {item.fromStatus || "unknown"} {"->"} {item.toStatus || "unknown"} by {item.actorEmail || "unknown"}
-                      </Text>
-                      <Text style={styles.recordMeta}>
-                        Lateness: {item.fromLatenessMinutes} {"->"} {item.toLatenessMinutes} min
-                      </Text>
-                      {item.note ? <Text style={styles.recordMeta}>Note: {item.note}</Text> : null}
-                    </View>
-                  ))
-                ) : (
-                  <Text style={styles.emptyText}>No attendance corrections recorded today.</Text>
-                )}
-              </View>
-
-              <Text style={styles.sectionTitle}>Branch staff roster</Text>
-              <View style={styles.listCard}>
-                {employees.length ? (
-                  employees.map((employee) => (
-                    <View key={employee.id} style={styles.recordCard}>
-                      <Text style={styles.recordTitle}>
-                        {employee.employeeCode} | {employee.email}
-                      </Text>
-                      <Text style={styles.recordMeta}>
-                        Role: {employee.roleType} | Status: {employee.employmentStatus}
-                      </Text>
-                      {policies.managerCanSuspendStaff ? (
-                        <View style={styles.actionRow}>
-                          {employee.employmentStatus !== "active" ? (
-                              <Pressable
-                                onPress={() => void updateEmployeeStatus(employee, "active")}
-                                disabled={busyEmployeeId === employee.id || acknowledgementRequired}
-                              style={[
-                                styles.actionButton,
-                                acknowledgementRequired ? styles.actionButtonDisabled : null,
-                                busyEmployeeId === employee.id ? styles.actionButtonDisabled : null
-                              ]}
+                    <Text style={styles.recordDetail}>
+                      {record.shiftTemplateName || "No shift"} • Lateness: {record.latenessMinutes} min
+                    </Text>
+                    {!record.checkOutAt && <Text style={styles.statusPill}>Currently Checked In</Text>}
+                    
+                    <View style={styles.actionRow}>
+                      {policies.managerCanCorrectAttendance && (
+                        <>
+                          <Pressable
+                            onPress={() => void runCorrection(record, { attendanceStatus: "present", latenessMinutes: 0, exceptionFlag: false, note: "Manager cleared" })}
+                            disabled={busyRecordId === record.id || acknowledgementRequired}
+                            style={styles.actionBtn}
+                          >
+                            <Text style={styles.actionBtnText}>Resolve</Text>
+                          </Pressable>
+                          {!record.checkOutAt && (
+                            <Pressable
+                              onPress={() => void runCorrection(record, { checkOutAt: new Date().toISOString(), note: "Manager closed" })}
+                              disabled={busyRecordId === record.id || acknowledgementRequired}
+                              style={styles.actionBtnSecondary}
                             >
-                              <Text style={styles.actionButtonText}>Reactivate</Text>
+                              <Text style={styles.actionBtnSecondaryText}>Close</Text>
                             </Pressable>
-                          ) : (
-                            <>
-                              <Pressable
-                                onPress={() => void updateEmployeeStatus(employee, "suspended_paid")}
-                                disabled={busyEmployeeId === employee.id || acknowledgementRequired}
-                                style={[
-                                  styles.actionButtonSecondary,
-                                  acknowledgementRequired ? styles.actionButtonDisabled : null,
-                                  busyEmployeeId === employee.id ? styles.actionButtonDisabled : null
-                                ]}
-                              >
-                                <Text style={styles.actionButtonSecondaryText}>Suspend paid</Text>
-                              </Pressable>
-                              <Pressable
-                                onPress={() => void updateEmployeeStatus(employee, "suspended_unpaid")}
-                                disabled={busyEmployeeId === employee.id || acknowledgementRequired}
-                                style={[
-                                  styles.actionButtonDanger,
-                                  acknowledgementRequired ? styles.actionButtonDisabled : null,
-                                  busyEmployeeId === employee.id ? styles.actionButtonDisabled : null
-                                ]}
-                              >
-                                <Text style={styles.actionButtonText}>Suspend unpaid</Text>
-                              </Pressable>
-                            </>
                           )}
-                        </View>
-                      ) : (
-                        <Text style={styles.recordMeta}>Staff suspension is disabled by owner policy.</Text>
+                        </>
                       )}
                     </View>
-                  ))
-                ) : (
-                  <Text style={styles.emptyText}>No staff found for this branch.</Text>
-                )}
-              </View>
-            </>
-          )}
+                  </View>
+                ))
+              ) : (
+                <View style={styles.emptyCard}>
+                  <Text style={styles.emptyText}>All attendance is currently on track.</Text>
+                </View>
+              )}
+            </View>
 
-          <Pressable onPress={signOut} style={styles.ghostButton}>
-            <Text style={styles.ghostButtonText}>Sign out</Text>
+            {/* Staff Section */}
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Branch Staff</Text>
+              {employees.map((employee) => (
+                <View key={employee.id} style={styles.recordCard}>
+                  <View style={styles.recordHeader}>
+                    <Text style={styles.employeeName}>{employee.employeeCode}</Text>
+                    <Text style={styles.roleText}>{employee.roleType}</Text>
+                  </View>
+                  <Text style={styles.recordDetail}>{employee.email}</Text>
+                  {policies.managerCanSuspendStaff && (
+                    <View style={styles.actionRow}>
+                      {employee.employmentStatus === "active" ? (
+                        <Pressable
+                          onPress={() => void updateEmployeeStatus(employee, "suspended_unpaid")}
+                          disabled={busyEmployeeId === employee.id || acknowledgementRequired}
+                          style={styles.actionBtnDanger}
+                        >
+                          <Text style={styles.actionBtnText}>Suspend</Text>
+                        </Pressable>
+                      ) : (
+                        <Pressable
+                          onPress={() => void updateEmployeeStatus(employee, "active")}
+                          disabled={busyEmployeeId === employee.id || acknowledgementRequired}
+                          style={styles.actionBtn}
+                        >
+                          <Text style={styles.actionBtnText}>Reactivate</Text>
+                        </Pressable>
+                      )}
+                    </View>
+                  )}
+                </View>
+              ))}
+            </View>
+          </>
+        )}
+
+        {/* Footer */}
+        <View style={styles.footer}>
+          <Pressable onPress={signOut} style={styles.signOutBtn}>
+            <Text style={styles.signOutBtnText}>Sign Out</Text>
           </Pressable>
-          {message ? <Text style={styles.message}>{message}</Text> : null}
         </View>
+
+        {message && <View style={styles.toast}><Text style={styles.toastText}>{message}</Text></View>}
       </ScrollView>
     </SafeAreaView>
   );
@@ -447,125 +381,252 @@ export default function ManagerScreen() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: "#F7F3EC"
+    backgroundColor: "#F8FAFC",
   },
-  content: {
-    padding: 24
+  scrollContent: {
+    padding: 20,
   },
-  card: {
-    backgroundColor: "#FFF9F1",
-    borderRadius: 24,
-    padding: 24,
-    gap: 12
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 24,
+  },
+  headerIcons: {
+    flexDirection: "row",
+    gap: 12,
   },
   eyebrow: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: "#64748B",
     textTransform: "uppercase",
-    letterSpacing: 2,
-    color: "#1D5C63",
-    fontSize: 12
+    letterSpacing: 1,
   },
   title: {
-    fontSize: 28,
+    fontSize: 24,
     fontWeight: "700",
-    color: "#1E1E1E"
+    color: "#0F172A",
+    marginTop: 4,
   },
-  copy: {
-    fontSize: 16,
-    lineHeight: 22,
-    color: "#596467"
+  iconButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: "white",
+    justifyContent: "center",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
   },
-  meta: {
-    color: "#5A4A35",
-    fontSize: 14
+  statsGrid: {
+    flexDirection: "row",
+    backgroundColor: "white",
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 24,
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
   },
-  primaryButton: {
-    backgroundColor: "#1D5C63",
-    borderRadius: 999,
-    paddingVertical: 14,
-    alignItems: "center"
+  statCard: {
+    flex: 1,
+    alignItems: "center",
   },
-  primaryButtonText: {
-    color: "#FFFFFF",
-    fontWeight: "700"
+  statLabel: {
+    fontSize: 12,
+    color: "#64748B",
+    marginBottom: 4,
   },
-  buttonDisabled: {
-    opacity: 0.5
+  statValue: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#0F172A",
+  },
+  policyNotice: {
+    backgroundColor: "#EFF6FF",
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 24,
+    borderWidth: 1,
+    borderColor: "#DBEAFE",
+  },
+  policyBody: {
+    fontSize: 14,
+    color: "#1E40AF",
+    marginTop: 4,
+    marginBottom: 12,
+  },
+  acknowledgeButton: {
+    backgroundColor: "#2563EB",
+    borderRadius: 8,
+    paddingVertical: 10,
+    alignItems: "center",
+  },
+  acknowledgeButtonText: {
+    color: "white",
+    fontWeight: "600",
+    fontSize: 14,
+  },
+  section: {
+    marginBottom: 24,
   },
   sectionTitle: {
-    marginTop: 8,
     fontSize: 16,
     fontWeight: "700",
-    color: "#1E1E1E"
+    color: "#0F172A",
+    marginBottom: 12,
   },
-  listCard: {
-    gap: 10
+  primaryAction: {
+    flexDirection: "row",
+    backgroundColor: "#1D5C63",
+    borderRadius: 16,
+    padding: 20,
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 12,
+  },
+  disabledAction: {
+    opacity: 0.5,
+  },
+  primaryActionIcon: {
+    fontSize: 24,
+  },
+  primaryActionText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "700",
   },
   recordCard: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "white",
     borderRadius: 16,
+    padding: 16,
+    marginBottom: 12,
     borderWidth: 1,
-    borderColor: "#D7CEC0",
-    padding: 14,
-    gap: 4
+    borderColor: "#E2E8F0",
   },
-  recordTitle: {
-    color: "#1E1E1E",
-    fontWeight: "700"
+  recordHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 8,
   },
-  recordMeta: {
-    color: "#596467",
-    fontSize: 13
+  employeeName: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: "#0F172A",
+  },
+  roleText: {
+    fontSize: 12,
+    color: "#64748B",
+    fontWeight: "600",
+  },
+  recordDetail: {
+    fontSize: 14,
+    color: "#64748B",
+    marginBottom: 8,
+  },
+  statusPill: {
+    fontSize: 11,
+    color: "#059669",
+    fontWeight: "700",
+    backgroundColor: "#ECFDF5",
+    alignSelf: "flex-start",
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 99,
+    marginBottom: 12,
+  },
+  badge: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
+  },
+  badgeDanger: {
+    backgroundColor: "#FEE2E2",
+  },
+  badgeWarning: {
+    backgroundColor: "#FEF3C7",
+  },
+  badgeText: {
+    fontSize: 10,
+    fontWeight: "700",
+    textTransform: "uppercase",
   },
   actionRow: {
-    marginTop: 8,
     flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 8
+    gap: 8,
   },
-  actionButton: {
+  actionBtn: {
     backgroundColor: "#1D5C63",
-    borderRadius: 999,
-    paddingHorizontal: 12,
-    paddingVertical: 9
+    borderRadius: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
   },
-  actionButtonSecondary: {
-    backgroundColor: "#E6EFEF",
-    borderRadius: 999,
-    paddingHorizontal: 12,
-    paddingVertical: 9
+  actionBtnSecondary: {
+    backgroundColor: "#F1F5F9",
+    borderRadius: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
   },
-  actionButtonDanger: {
-    backgroundColor: "#A33A2A",
-    borderRadius: 999,
-    paddingHorizontal: 12,
-    paddingVertical: 9
+  actionBtnDanger: {
+    backgroundColor: "#EF4444",
+    borderRadius: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
   },
-  actionButtonText: {
-    color: "#FFFFFF",
+  actionBtnText: {
+    color: "white",
     fontSize: 12,
-    fontWeight: "700"
+    fontWeight: "600",
   },
-  actionButtonSecondaryText: {
-    color: "#1D5C63",
+  actionBtnSecondaryText: {
+    color: "#475569",
     fontSize: 12,
-    fontWeight: "700"
+    fontWeight: "600",
   },
-  actionButtonDisabled: {
-    opacity: 0.5
+  emptyCard: {
+    backgroundColor: "white",
+    borderRadius: 16,
+    padding: 32,
+    alignItems: "center",
+    borderStyle: "dashed",
+    borderWidth: 1,
+    borderColor: "#CBD5E1",
   },
   emptyText: {
-    color: "#7B8587"
+    color: "#94A3B8",
+    fontSize: 14,
   },
-  ghostButton: {
+  footer: {
+    marginTop: 20,
+    marginBottom: 40,
+  },
+  signOutBtn: {
     paddingVertical: 12,
-    alignItems: "center"
+    alignItems: "center",
   },
-  ghostButtonText: {
-    color: "#1D5C63",
-    fontWeight: "700"
+  signOutBtnText: {
+    color: "#EF4444",
+    fontWeight: "600",
   },
-  message: {
-    color: "#5A4A35",
-    fontSize: 14
+  toast: {
+    position: "absolute",
+    bottom: 20,
+    left: 20,
+    right: 20,
+    backgroundColor: "#1E293B",
+    padding: 16,
+    borderRadius: 12,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 5,
+  },
+  toastText: {
+    color: "white",
+    fontSize: 14,
+    textAlign: "center",
   }
 });
+

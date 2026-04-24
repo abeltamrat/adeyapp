@@ -1,0 +1,59 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.3
+
+      - name: Install Dependencies
+        run: pnpm install
+
+      - name: Build Marketing Site (Public Web)
+        run: pnpm --filter public-web build
+
+      - name: Build Tenant App (Expo Web)
+        run: pnpm --filter tenant-app build
+
+      - name: Prepare Deployment Directory
+        run: |
+          mkdir deploy_bundle
+          # Copy built marketing site to root
+          cp -r apps/public-web/out/* deploy_bundle/
+          # Create and copy backend
+          mkdir -p deploy_bundle/backend
+          cp -r backend/* deploy_bundle/backend/
+          # Create and copy tenant app
+          mkdir -p deploy_bundle/app
+          cp -r apps/tenant-app/dist/* deploy_bundle/app/
+          # Copy root config files
+          cp .htaccess deploy_bundle/
+          cp .env deploy_bundle/
+          # Ensure storage exists (empty placeholder)
+          mkdir -p deploy_bundle/storage
+
+      - name: Deploy via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./deploy_bundle/
+          server-dir: ./
+          dangerous-clean-slate: false # Keep existing files like those from other subdomains
