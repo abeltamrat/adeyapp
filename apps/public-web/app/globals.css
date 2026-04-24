@@ -389,3 +389,8 @@ body {
 .gap-4 { gap: 4px; }
 .feature-icon-demo { background: rgba(219, 141, 54, 0.1); color: var(--accent); }
 .feature-icon-brand { background: var(--brand-soft); color: var(--brand); }
+.bg-ink { background: var(--ink); }
+.text-white { color: white; }
+.text-muted-white { color: rgba(255,255,255,0.7); }
+.bg-white-5 { background: rgba(255,255,255,0.05); }
+.border-white-10 { border: 1px solid rgba(255,255,255,0.1); }
