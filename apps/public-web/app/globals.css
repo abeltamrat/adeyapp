@@ -377,3 +377,12 @@ body {
 .border-t { border-top: 1px solid var(--line); }
 .mt-60 { margin-top: 60px; }
 .grid-gap-12 { display: grid; gap: 12px; }
+.rtl { direction: rtl; }
+.ltr { direction: ltr; }
+.font-lg { font-size: 1.1rem; }
+.leading-relaxed { line-height: 1.6; }
+.border-none { border: none; }
+.max-w-700 { max-width: 700px; }
+.max-w-600 { max-width: 600px; }
+.mt-neg-24 { margin-top: -24px; }
+.p-0-40 { padding: 40px 0; }

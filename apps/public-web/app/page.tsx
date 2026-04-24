@@ -61,18 +61,18 @@ export default function HomePage() {
       </section>
 
       {/* Feature Sections */}
-      <section className="hero-split" style={{ direction: 'rtl', textAlign: 'left' }}>
-        <div className="hero-copy" style={{ direction: 'ltr' }}>
+      <section className="hero-split rtl text-left">
+        <div className="hero-copy ltr">
           <span className="eyebrow">Multi-Branch Management</span>
           <h2>Grow beyond one front desk.</h2>
-          <p className="muted" style={{ fontSize: '1.1rem', lineHeight: '1.6', marginBottom: '24px' }}>
+          <p className="muted font-lg leading-relaxed mb-24">
             Manage multiple branches with branch-specific rooms, services, and staff. Get consolidated reports or drill down into individual branch performance.
           </p>
           <div className="stat-row">
             <strong>✓</strong>
             <span>Branch-specific policies & pricing</span>
           </div>
-          <div className="stat-row" style={{ marginTop: '12px' }}>
+          <div className="stat-row mt-12">
             <strong>✓</strong>
             <span>Centralized inventory control</span>
           </div>
@@ -88,10 +88,10 @@ export default function HomePage() {
       </section>
 
       {/* Platform Control */}
-      <section className="section-card" style={{ background: 'var(--brand-soft)', border: 'none', textAlign: 'center', padding: '60px' }}>
+      <section className="section-card bg-brand-soft border-none text-center p-60">
         <span className="eyebrow">Platform Integrity</span>
-        <h2 style={{ marginBottom: '24px' }}>Enterprise-grade control for operators.</h2>
-        <p className="muted" style={{ maxWidth: '700px', margin: '0 auto 40px', fontSize: '1.1rem' }}>
+        <h2 className="mb-24">Enterprise-grade control for operators.</h2>
+        <p className="muted max-w-700 mx-auto mb-40 font-lg">
           AdeyApp isn't just a booking tool. It's a tenant management system with full audit logs, billing entitlements, and support integration.
         </p>
         <Link className="button" href="/features">
@@ -100,12 +100,12 @@ export default function HomePage() {
       </section>
 
       {/* CTA Section */}
-      <section style={{ textAlign: 'center', padding: '40px 0' }}>
+      <section className="text-center p-0-40">
         <h2 className="section-title">Ready to calm the chaos?</h2>
-        <p className="muted" style={{ maxWidth: '600px', margin: '-24px auto 40px' }}>
+        <p className="muted max-w-600 mx-auto mt-neg-24 mb-40">
           Join the growing list of spa owners who trust AdeyApp for their daily operations.
         </p>
-        <div className="cta-row" style={{ justifyContent: 'center' }}>
+        <div className="cta-row flex-center">
           <Link className="button" href="/signup">
             Get Started Today
           </Link>
