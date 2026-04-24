@@ -111,7 +111,7 @@ api.yourdomain.com -> /home/<cpanel-user>/adeyapp/backend/public
 
 ## Co-located Hosting Structure
 
-If hosting everything on a single subdomain (`adey.nonstopplc.com`), use the following structure in the subdomain's root folder:
+If hosting everything on a single subdomain (`adeyapp.nonstopplc.com`), use the following structure in the subdomain's root folder:
 
 | Path | Purpose | Content Source |
 | :--- | :--- | :--- |
@@ -147,22 +147,22 @@ RewriteRule ^app/.*$ app/index.html [L]
 ## Environment Configuration
 
 ### Production Domain
-- **Main Domain**: `adey.nonstopplc.com`
+- **Main Domain**: `adeyapp.nonstopplc.com`
 - **Deployment Folder**: Isolated subdomain directory under `nonstopplc.com`.
 - **Deployment Method**: GitHub Actions via FTP (already configured).
 
 ### Minimum required production values
 
 - `APP_ENV=production`
-- `APP_URL_TENANT_API=https://adey.nonstopplc.com/api`
-- `EXPO_PUBLIC_API_URL=https://adey.nonstopplc.com/api`
+- `APP_URL_TENANT_API=https://adeyapp.nonstopplc.com/api`
+- `EXPO_PUBLIC_API_URL=https://adeyapp.nonstopplc.com/api`
 - `DATABASE_URL=mysql://nonstopp_adey_user:pass%40adey_user@localhost:3306/nonstopp_adey`
 - `JWT_ACCESS_SECRET=<generate-strong-secret>`
 - `JWT_REFRESH_SECRET=<generate-strong-secret>`
 - `STORAGE_DRIVER=filesystem`
-- `STORAGE_BASE_PATH=/home/nonstopp/adey.nonstopplc.com/storage`
-- `STORAGE_PUBLIC_BASE_URL=https://adey.nonstopplc.com/storage`
-- `EMAIL_FROM_ADDRESS=noreply@adey.nonstopplc.com`
+- `STORAGE_BASE_PATH=/home/nonstopp/adeyapp.nonstopplc.com/storage`
+- `STORAGE_PUBLIC_BASE_URL=https://adeyapp.nonstopplc.com/storage`
+- `EMAIL_FROM_ADDRESS=noreply@adeyapp.nonstopplc.com`
 
 ### Database Credentials Summary
 | Key | Value |
