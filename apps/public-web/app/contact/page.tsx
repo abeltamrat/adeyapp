@@ -15,7 +15,7 @@ export default function ContactPage() {
       {/* Contact Cards */}
       <section className="grid feature-grid">
         <article className="section-card">
-          <div className="feature-icon" style={{ background: 'rgba(219, 141, 54, 0.1)', color: 'var(--accent)' }}>👋</div>
+          <div className="feature-icon feature-icon-demo">👋</div>
           <h3>Book a Demo</h3>
           <p className="muted mb-24">
             Get a personalized walkthrough of branch operations, staff flow, and platform controls.
@@ -33,7 +33,7 @@ export default function ContactPage() {
         </article>
 
         <article className="section-card">
-          <div className="feature-icon bg-brand-soft" style={{ color: 'var(--brand)' }}>🛠️</div>
+          <div className="feature-icon feature-icon-brand">🛠️</div>
           <h3>Technical Support</h3>
           <p className="muted mb-24">
             Existing tenant? Our support team is ready to help with any operational issues.
@@ -52,19 +52,19 @@ export default function ContactPage() {
         </div>
         <div className="grid-gap-32 w-full">
           <div className="stat-row">
-            <div className="grid-gap-32" style={{ gap: '4px' }}>
+            <div className="grid-gap-32 gap-4">
               <span className="font-semi">Sales & Demos</span>
               <span className="muted">Within 24 business hours</span>
             </div>
           </div>
           <div className="stat-row">
-            <div className="grid-gap-32" style={{ gap: '4px' }}>
+            <div className="grid-gap-32 gap-4">
               <span className="font-semi">Priority Support</span>
               <span className="muted">Within 2-4 hours (Growth & Enterprise)</span>
             </div>
           </div>
           <div className="stat-row">
-            <div className="grid-gap-32" style={{ gap: '4px' }}>
+            <div className="grid-gap-32 gap-4">
               <span className="font-semi">Standard Support</span>
               <span className="muted">Within 12-24 business hours</span>
             </div>
@@ -73,7 +73,7 @@ export default function ContactPage() {
       </section>
 
       {/* Location/Other Info Teaser */}
-      <section className="text-center" style={{ padding: '40px 0' }}>
+      <section className="text-center p-0-40">
         <h3>Need immediate answers?</h3>
         <p className="muted mb-24">Check out our frequently asked questions in the help center.</p>
         <Link href="/help" className="button-secondary">Browse Help Center</Link>

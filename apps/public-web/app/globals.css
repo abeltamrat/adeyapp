@@ -386,3 +386,6 @@ body {
 .max-w-600 { max-width: 600px; }
 .mt-neg-24 { margin-top: -24px; }
 .p-0-40 { padding: 40px 0; }
+.gap-4 { gap: 4px; }
+.feature-icon-demo { background: rgba(219, 141, 54, 0.1); color: var(--accent); }
+.feature-icon-brand { background: var(--brand-soft); color: var(--brand); }
