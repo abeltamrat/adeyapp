@@ -6,14 +6,28 @@
     "version": "0.1.0",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
-    "plugins": ["expo-router"],
+    "plugins": [
+      "expo-router"
+    ],
     "experiments": {
       "typedRoutes": true
+    },
+    "android": {
+      "package": "com.adeyapp.tenant"
     },
     "web": {
       "bundler": "metro",
       "output": "static",
       "baseUrl": "/app"
-    }
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "e37ccef6-0b87-4d16-bfdc-f327359df626"
+      }
+    },
+    "owner": "abeltamrat"
   }
 }

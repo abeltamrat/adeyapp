@@ -42,6 +42,15 @@ importers:
 
   apps/customer-app:
     dependencies:
+      '@adeyapp/api-client':
+        specifier: workspace:*
+        version: link:../../packages/api-client
+      '@adeyapp/auth':
+        specifier: workspace:*
+        version: link:../../packages/auth
+      '@adeyapp/types':
+        specifier: workspace:*
+        version: link:../../packages/types
       expo:
         specifier: ^52.0.7
         version: 52.0.49(@babel/core@7.29.0)(@babel/preset-env@7.29.2(@babel/core@7.29.0))(@expo/metro-runtime@4.0.1(react-native@0.76.9(@babel/core@7.29.0)(@babel/preset-env@7.29.2(@babel/core@7.29.0))(@types/react@18.3.12)(react@18.3.1)))(react-native@0.76.9(@babel/core@7.29.0)(@babel/preset-env@7.29.2(@babel/core@7.29.0))(@types/react@18.3.12)(react@18.3.1))(react@18.3.1)

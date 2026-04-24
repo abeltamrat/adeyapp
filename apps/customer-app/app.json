@@ -6,9 +6,23 @@
     "version": "0.1.0",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
-    "plugins": ["expo-router"],
+    "plugins": [
+      "expo-router"
+    ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "c409018d-9424-4b9f-9787-255dc45cf171"
+      }
+    },
+    "owner": "abeltamrat",
+    "android": {
+      "package": "com.adeyapp.customer"
     }
   }
 }
