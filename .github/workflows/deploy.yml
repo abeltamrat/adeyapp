@@ -25,17 +25,8 @@ jobs:
       - name: Install Dependencies
         run: pnpm install
 
-      - name: Build Marketing Site (Public Web)
-        run: pnpm --filter public-web build
-
-      - name: Build Tenant App (Expo Web)
-        run: pnpm --filter tenant-app build
-
-      - name: Build Customer App (Expo Web)
-        run: pnpm --filter customer-app build
-
-      - name: Build Superadmin Web (Next.js)
-        run: pnpm --filter superadmin-web build
+      - name: Build All Applications
+        run: pnpm build
 
       - name: Prepare Deployment Directory
         run: |
