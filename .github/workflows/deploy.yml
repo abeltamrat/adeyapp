@@ -44,7 +44,7 @@ jobs:
           cp -r apps/tenant-app/dist/* deploy_bundle/app/
           # Copy root config files
           cp .htaccess deploy_bundle/
-          cp .env deploy_bundle/
+          [ -f .env ] && cp .env deploy_bundle/ || echo ".env not found, skipping"
           # Ensure storage exists (empty placeholder)
           mkdir -p deploy_bundle/storage
 
