@@ -21,9 +21,9 @@ export default function LoginPage() {
             operations, attendance, bookings, policies, or payroll-related flows.
           </p>
           <div className="cta-row">
-            <a className="button" href="exp://127.0.0.1:8081">
+            <Link className="button" href="/app">
               Open tenant app
-            </a>
+            </Link>
           </div>
         </article>
 
@@ -35,9 +35,9 @@ export default function LoginPage() {
             or reviewing customer notifications.
           </p>
           <div className="cta-row">
-            <a className="button" href="exp://127.0.0.1:8082">
+            <Link className="button" href="/customer">
               Open customer app
-            </a>
+            </Link>
           </div>
         </article>
 
@@ -49,9 +49,9 @@ export default function LoginPage() {
             support queues, or platform-wide maintenance operations.
           </p>
           <div className="cta-row">
-            <a className="button" href="http://localhost:3001/login">
+            <Link className="button" href="/admin">
               Open superadmin
-            </a>
+            </Link>
           </div>
         </article>
       </section>

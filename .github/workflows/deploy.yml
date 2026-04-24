@@ -31,6 +31,12 @@ jobs:
       - name: Build Tenant App (Expo Web)
         run: pnpm --filter tenant-app build
 
+      - name: Build Customer App (Expo Web)
+        run: pnpm --filter customer-app build
+
+      - name: Build Superadmin Web (Next.js)
+        run: pnpm --filter superadmin-web build
+
       - name: Prepare Deployment Directory
         run: |
           mkdir deploy_bundle
@@ -42,6 +48,12 @@ jobs:
           # Create and copy tenant app
           mkdir -p deploy_bundle/app
           cp -r apps/tenant-app/dist/* deploy_bundle/app/
+          # Create and copy customer app
+          mkdir -p deploy_bundle/customer
+          cp -r apps/customer-app/dist/* deploy_bundle/customer/
+          # Create and copy superadmin
+          mkdir -p deploy_bundle/admin
+          cp -r apps/superadmin-web/out/* deploy_bundle/admin/
           # Copy root config files
           cp .htaccess deploy_bundle/
           [ -f .env ] && cp .env deploy_bundle/ || echo ".env not found, skipping"
