@@ -55,5 +55,5 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: ./deploy_bundle/
-          server-dir: public_html/adeyapp.nonstopplc.com/
+          server-dir: ./adeyapp.nonstopplc.com/
           dangerous-clean-slate: false # Keep existing files like those from other subdomains
