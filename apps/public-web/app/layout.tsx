@@ -33,37 +33,37 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             <div className="footer-grid">
               <div className="footer-brand">
                 <Link href="/" className="logo">AdeyApp</Link>
-                <p className="muted" style={{ marginTop: '16px', maxWidth: '300px' }}>
+                <p className="muted mt-16 max-w-300">
                   The operations platform for modern spa businesses. Built for scale, designed for calm.
                 </p>
               </div>
               <div className="footer-links">
-                <h4 style={{ marginBottom: '16px' }}>Product</h4>
-                <div style={{ display: 'grid', gap: '12px' }}>
+                <h4 className="mb-16">Product</h4>
+                <div className="grid-gap-12">
                   <Link href="/features" className="muted">Features</Link>
                   <Link href="/pricing" className="muted">Pricing</Link>
                   <Link href="/help" className="muted">Help Center</Link>
                 </div>
               </div>
               <div className="footer-links">
-                <h4 style={{ marginBottom: '16px' }}>Company</h4>
-                <div style={{ display: 'grid', gap: '12px' }}>
+                <h4 className="mb-16">Company</h4>
+                <div className="grid-gap-12">
                   <Link href="/contact" className="muted">Contact Us</Link>
                   <Link href="/about" className="muted">About</Link>
                   <Link href="/privacy" className="muted">Privacy Policy</Link>
                 </div>
               </div>
               <div className="footer-links">
-                <h4 style={{ marginBottom: '16px' }}>Connect</h4>
-                <div style={{ display: 'grid', gap: '12px' }}>
+                <h4 className="mb-16">Connect</h4>
+                <div className="grid-gap-12">
                   <a href="#" className="muted">Twitter</a>
                   <a href="#" className="muted">LinkedIn</a>
                   <a href="#" className="muted">Instagram</a>
                 </div>
               </div>
             </div>
-            <div style={{ marginTop: '60px', paddingTop: '24px', borderTop: '1px solid var(--line)', textAlign: 'center' }}>
-              <p className="muted" style={{ fontSize: '0.875rem' }}>
+            <div className="mt-60 pt-24 border-t text-center">
+              <p className="muted font-sm">
                 © {new Date().getFullYear()} AdeyApp. All rights reserved.
               </p>
             </div>

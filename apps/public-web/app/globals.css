@@ -372,3 +372,8 @@ body {
 .rounded-lg { border-radius: var(--radius-lg); }
 .ink { color: var(--ink); }
 .bold { font-weight: 700; }
+.max-w-300 { max-width: 300px; }
+.pt-24 { padding-top: 24px; }
+.border-t { border-top: 1px solid var(--line); }
+.mt-60 { margin-top: 60px; }
+.grid-gap-12 { display: grid; gap: 12px; }
