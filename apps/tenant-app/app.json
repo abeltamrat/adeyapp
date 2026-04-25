@@ -12,9 +12,6 @@
     "experiments": {
       "typedRoutes": true
     },
-    "install": {
-      "exclude": ["react-native-safe-area-context", "react-native-screens", "@react-navigation/native", "expo-status-bar"]
-    },
     "android": {
       "package": "com.adeyapp.tenant"
     },
