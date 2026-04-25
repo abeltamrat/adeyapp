@@ -12,6 +12,9 @@
     "experiments": {
       "typedRoutes": true
     },
+    "install": {
+      "exclude": ["react-native-safe-area-context", "react-native-screens", "@react-navigation/native", "expo-status-bar"]
+    },
     "extra": {
       "router": {
         "origin": false
