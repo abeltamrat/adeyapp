@@ -1,0 +1,66 @@
+﻿node.exe : Ôÿà eas-cli@18.8.1 is now available.
+At line:1 char:1
++ & "C:\Program Files\nodejs/node.exe" "C:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Ôÿà eas-cli@18.8.1 is now available.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+To upgrade, run:
+npm install -g eas-cli
+Proceeding with outdated version.
+
+- Fetching the buildÔÇª
+ÔêÜ Found a matching build for the project @abeltamrat/adeyapp-tenant
+{
+  "id": "ffb7c458-a01b-4ca8-b5ea-e58d47732a8f",
+  "status": "ERRORED",
+  "platform": "ANDROID",
+  "error": {
+    "errorCode": "UNKNOWN_ERROR",
+    "message": "Unknown error. See logs of the Bundle JavaScript build phase for more information."
+  },
+  "artifacts": {},
+  "fingerprint": {
+    "id": "019dc40c-408b-7057-9224-18a0494d8f48",
+    "hash": "8aa79c4870621f915d38025f2601a18ac8929652"
+  },
+  "initiatingActor": {
+    "id": "52b3f767-9ed8-4ac0-8e38-9b928d841263",
+    "displayName": "abeltamrat"
+  },
+  "logFiles": [
+    "https://job-logs.eascdn.net/production/ffb7c458-a01b-4ca8-b5ea-e58d47732a8f/1777110630699-0a690885-f564-4757-aa5a-88f9ad462586.txt?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=www-production%40exponentjs.iam.gserviceaccount.com%2F20260427%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20260427T160330Z&X-Goog-Expires=900&X-Goog-SignedHeaders=host&X-Goog-Signature=a8b161bf978269fc84d75acca4bbfc5c37144b07dcf75e051f8d676ee3686ce5d6494393da5e3896df006f56cf67c96bf45fce493b114f41daa54353b02c790f982175dca3d9755bb6a9643802673e34500368e5a9ccb3a38973604252f3ba0e5d6e467ca90b5a1ff0a00a6b7858ff8bf420e0a8895723c679487197bf5f55299f97cfaae16d096594f7459ea471b1f1046236af64616dc5ed9e295309f336678133b351c3fb69c93a4c9538e182a01ec9900431fdb1c6679d2cabf31741faad6ae2563bbb5e28f0cc6ade826b1bd348c8f9fbd41e763761f6ff06ad93d38d8bd2d43bc3671620744b74bb7639a80871ce0e1a0479810435ca074df10b881005",
+    "https://job-logs.eascdn.net/production/ffb7c458-a01b-4ca8-b5ea-e58d47732a8f/1777110699287-fe5196c3-9b78-4412-bb58-f299768d8ac9.txt?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=www-production%40exponentjs.iam.gserviceaccount.com%2F20260427%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20260427T160330Z&X-Goog-Expires=900&X-Goog-SignedHeaders=host&X-Goog-Signature=0133a7f13f16f0849161455f7afde02a64cdf1841ef42d4a7fdf8cd99eebb7795603c097f53f78698fdce935328443d97ab932adc6557f4c4974177a45ed1ad532efac7b317ecf66eea03e18d860fa5d5786e40c242891f6afcde8d92245a5135379831984910710818f61f1edf589c3d11a22a88814b928f627575424156c853898266040bd7017189f293812ba591d594898f5908c270ccfbeff49883b79b495e24a831301f5922e303d11895c5afcfe158f7cb0ecf3089ea036f00d2ea8be59836796fd6744aef8993c7d6347bd2d6480445e701a49a258006c0ff760c0bd0f464940a663aca0c930b04339c12dca4d323ad4f4b27f5e4e25d93c6ee5c343",
+    "https://job-logs.eascdn.net/production/ffb7c458-a01b-4ca8-b5ea-e58d47732a8f/1777110706216-ffb71891-f992-412b-9a70-9692eb747491.txt?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=www-production%40exponentjs.iam.gserviceaccount.com%2F20260427%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20260427T160330Z&X-Goog-Expires=900&X-Goog-SignedHeaders=host&X-Goog-Signature=d3f745e0ad6313d1dffa54756f5033c7af06526d217855eb5b1c9a8b72b3ba957c3e4ceea067be3a98edf546ad61295d69d603e74c6c10b46904626fd524aef1352fb37f85e935a0344c2958bc01c83ce88c7b37c0ca5ae0f702f20c1534f84c6c3e0ad0e22df8938abd386807a1b61cce9d1b61946adc51c7149dc0e0c1f363d81677e56c23812d823b23e1cc9267ef909fa02df506ad895fdfa5722918839cfc0af9d0849a9f748b2e62ac54b81bb7737a1a4273d65d5e3d4e3c2236a35b34f349b07f1ec854ba38be6244ca299764c5976009c190f82dbf41ba488de8e3d3a1f06c5396cbd6af61f0cd9efc1871b70ea506af30ffa661f5dd817ffc7a8f82",
+    "https://job-logs.eascdn.net/production/ffb7c458-a01b-4ca8-b5ea-e58d47732a8f/1777110706470-f2fcd971-1833-4359-a34b-e8721e2a0e2d.txt?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=www-production%40exponentjs.iam.gserviceaccount.com%2F20260427%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20260427T160330Z&X-Goog-Expires=900&X-Goog-SignedHeaders=host&X-Goog-Signature=4b3dedb70b190ca08627d3d99a782804bd9073ebecea3803909f8b4f69cc7902ef871e8619be689093b4161c010714fc7608f26e4a871f383d71397dc7a1be8bb625e45e31d9efa7b331f1d430c2ef8e8ddb62b643d21c517739f97c471ef638f1fca0c13915a3a2a4adf3dbb1c8d7f31fe285d248da31838e55fc832cbdf3c11fc1141f66d4b22a242194d2e6338824ffc9d07bc3c8577c1dcc016422b25fc551cfd270018799635dbf1a2fd4b37bab013dfeaf661dccaf24d33b751e5cd0c64975bbd6e7d54ef2eecc75834999f0c6ce143c706360d0fca56d2d45f84489110f90245107b1fea2d755b9c116f09e91ff11f6dc19e18c0ed307212bc2d3e37a",
+    "https://job-logs.eascdn.net/production/ffb7c458-a01b-4ca8-b5ea-e58d47732a8f/1777110706676-e5935cbb-9c5a-465c-82b4-c9018330b6f2.txt?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=www-production%40exponentjs.iam.gserviceaccount.com%2F20260427%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20260427T160330Z&X-Goog-Expires=900&X-Goog-SignedHeaders=host&X-Goog-Signature=1f94dd05e1d81f451b326563849c8aa64150937e7edee3f7367c3eaf81aa8a4ddffdd39ea17d16e0bcd185d88d3d93fefef34f6d7499ab07ef667cf56939b7b15628a00a67bc219e2a342bce0ca9fc78331e9728666dee3c2b13ed671b1b14c67d08ca4a67986842ecace9e79832696c4b439a0db36d5a42a246c925cf3970534356a690b122b550471459e456be305ac7a2787b8f40b30f09a2e8286acdb92d33a6c1361ceb74fafbb79eacd0f03ebd4c0a71c87ba5a37191a813676aa5f0d14b9a052f26454c21eb21f2db89fdc10ab7d197df40f1405e3cb8410a6445c9f4d28e755fd8a16006557f563696bb3ac4ff119c20dd8e8ac0f4e124cac54c9761"
+  ],
+  "project": {
+    "id": "e37ccef6-0b87-4d16-bfdc-f327359df626",
+    "name": "adeyapp-tenant",
+    "slug": "adeyapp-tenant",
+    "ownerAccount": {
+      "id": "691cb1fb-dab3-4957-b7d6-1d097fba9e1c",
+      "name": "abeltamrat"
+    }
+  },
+  "distribution": "INTERNAL",
+  "buildProfile": "preview",
+  "sdkVersion": "52.0.0",
+  "appVersion": "0.1.0",
+  "appBuildVersion": "1",
+  "gitCommitHash": "6827296e4e963a07e815e259845452c4083b455c",
+  "gitCommitMessage": "fix: use hoisted node-linker and exclude peer dep warnings in app.json for EAS compatibility",
+  "priority": "NORMAL",
+  "createdAt": "2026-04-25T09:50:30.501Z",
+  "updatedAt": "2026-04-25T13:01:02.316Z",
+  "completedAt": "2026-04-25T09:52:53.542Z",
+  "expirationDate": "2026-05-09T09:50:30.532Z",
+  "isForIosSimulator": false,
+  "metrics": {
+    "buildWaitTime": 69666,
+    "buildQueueTime": 38612,
+    "buildDuration": 34329
+  }
+}
+
